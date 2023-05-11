@@ -5,11 +5,11 @@
 - \[X\] FEN Loader
 - \[X\] General Movement Rules
 - \[X\] Piece Movement
-- \[ \] Code Framework
+- \[X\] Code Framework
 - \[X\] Move Generator
 - \[ \] Time Management
-- \[ \] Pick move
-- \[ \] Unit tests
+- \[X\] Pick move
+- \[X\] Unit tests
 - \[ \] Benchmarks
 
 ### Documentation TODO's
