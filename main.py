@@ -626,6 +626,8 @@ def make_move(move):
     #get current and target position
     position = get_move_source(move)
     target = get_move_target(move)
+    promoted_piece = get_move_piece(move)
+    print(char_ascii[promoted_piece])
 
     print("Moving " + square_representation[position] + " to " + square_representation[target])
 
@@ -633,30 +635,33 @@ def make_move(move):
     board[target] = board[position]
     board[position] = e
 
-
+    #promote pawn
+    if promoted_piece:
+        board[target] = promoted_piece
 
     #restore board
-    board = board_copy
-    king_position = king_position_copy
-    side = side_copy
-    can_castle = can_castle_copy
+    #board = board_copy
+    #king_position = king_position_copy
+    #side = side_copy
+    #can_castle = can_castle_copy
 
 
 def main():
-
-    load_fen(fen)
+    
+    load_fen('r3k2r/p1Ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1')
     # print_attack()
     print_stats()
     print_board()
-    #print(square_representation.index('e1'))
+    #print(square_representation.index('c7'))
 
     #generate move
     moves = Moves()
     moves.count = 0
-    generate_move(moves)
+    #generate_move(moves)
 
     #create test move
-    move = moves[randrange(moves.count)]
+    #move = moves[randrange(moves.count)]
+    #move = set_move(18, 2, B, 1, 0, 0)
     make_move(move)
 
     print_board()
