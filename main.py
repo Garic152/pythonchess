@@ -4,6 +4,7 @@ Trying out some chess engine stuff
 
 import evaluate
 from random import randrange
+import time
 
 #defining the piece integer representation
 e, P, N, B, R, Q, K, p, n, b, r, q, k, o = range(14)
@@ -582,7 +583,6 @@ def generate_move(move):
                             move.add_move(set_move(position, position + current_movement, 0, 0, 0, 0))
                             pass
 
-                        print(current_movement) 
                         current_movement += movement
                         target += movement
 
@@ -684,7 +684,7 @@ def make_move(move):
     #change side
     side ^= 1
 
-    print("Moving " + square_representation[position] + " to " + square_representation[target])
+    #print("Moving " + square_representation[position] + " to " + square_representation[target])
 
     #is king attacked
     if is_position_attacked(king_position[side ^ 1] if not side else king_position[side ^ 1], side):
@@ -703,12 +703,17 @@ def make_move(move):
         return 1
 
 
+#define tree length
+tree_size = 0
+
+def get_time_ms():
+    return time.process_time() 
+
 def chess(depth):
-
-    print(depth)
-
+    global tree_size
     #break when depth = 0
     if not depth:
+        tree_size += 1
         return
 
     global side
@@ -722,7 +727,6 @@ def chess(depth):
     generate_move(moves)
 
     for move_count in range (moves.count):
-        inputtest = input(" ")
         #define board state copy variable
         board_copy = [0] * 128
         king_position_copy = [2]
@@ -738,7 +742,47 @@ def chess(depth):
         #only legal moves
         if not make_move(moves[move_count]): 
             continue
+
+        #recursive until depth = 0
+        chess(depth - 1)
+        test = input(" ")
         print_board()
+
+        #restore board
+        board = board_copy
+        king_position = king_position_copy
+        side = side_copy
+        can_castle = can_castle_copy
+
+    
+def chess_perft(depth):
+    global tree_size
+    global side
+    global board
+    global king_position
+    global can_castle
+
+    #generate move
+    moves = Moves()
+    #moves.count = 0
+    generate_move(moves)
+
+    for move_count in range (moves.count):
+        #define board state copy variable
+        board_copy = [0] * 128
+        king_position_copy = [2]
+        side_copy = 0
+        can_castle_copy = 0
+
+        #copy board state
+        board_copy = board.copy()
+        king_position_copy = king_position.copy()
+        side_copy = side
+        can_castle_copy = can_castle
+
+        #only legal moves
+        if not make_move(moves[move_count]): 
+            continue
 
         #recursive until depth = 0
         chess(depth - 1)
@@ -749,16 +793,18 @@ def chess(depth):
         side = side_copy
         can_castle = can_castle_copy
 
+    print("Loaded " + str(tree_size) + " moves in " + str(get_time_ms()) + " seconds.")
 
 def main():
     
-    load_fen('r3k2r/pP1pqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1')
+    load_fen(start_position)
     # print_attack()
     print_stats()
     print_board()
 
     #make the moves with depth 1
-    chess(1)
+    chess_perft(3)
+
 
 if __name__ == "__main__":
     main()
