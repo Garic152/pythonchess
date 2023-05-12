@@ -2,6 +2,7 @@
 Trying out some chess engine stuff
 """
 
+import evaluate
 from random import randrange
 
 #defining the piece integer representation
@@ -651,9 +652,9 @@ def make_move(move):
     if promoted_piece:
         board[target] = promoted_piece
 
-    #change castling rights
-    can_castle &= castling_rights[position]
-    can_castle &= castling_rights[target]
+    #update king position
+    if board[position] == K or board[position] == k:
+        king_position[side] = target
 
     #castling moves
     if castling:
@@ -671,17 +672,33 @@ def make_move(move):
                 board[3] = board[0]
                 board[0] = e
 
+    #change castling rights
+    can_castle &= castling_rights[position]
+    can_castle &= castling_rights[target]
 
-    #restore board
-    #board = board_copy
-    #king_position = king_position_copy
-    #side = side_copy
-    #can_castle = can_castle_copy
+    #change side
+    side ^= 1
+
+    #is king attacked
+    if is_position_attacked(king_position[side ^ 1] if not side else king_position[side ^ 1], side):
+        
+        #illegal move
+
+        #restore board
+        board = board_copy
+        king_position = king_position_copy
+        side = side_copy
+        can_castle = can_castle_copy
+        return 1
+
+    else:
+        #legal move
+        return 1
 
 
 def main():
     
-    load_fen('r3k2r/pPPpqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1')
+    load_fen('r3k2r/pPPpqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R b KQkq - 0 1')
     # print_attack()
     print_stats()
     print_board()
@@ -694,11 +711,14 @@ def main():
 
     #create test move
     #move = moves[randrange(moves.count)]
-    move = set_move(17, 0, Q, 1, 0, 0)
-    make_move(move)
+    move = set_move(4, 3, 0, 0, 0, 0)
+    make_move(move) 
 
     print_board()
     print_stats()
+    
+    print(make_move(move))
+
 
 if __name__ == "__main__":
     main()
