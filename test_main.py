@@ -2,6 +2,7 @@
 # (1) source: https://youtu.be/7BJ_BKeeJyM
 # (2) src for testing print function: https://youtu.be/dN-pVt7i4Us
 
+import numpy
 import pytest
 import main
 from main import Moves
@@ -143,8 +144,8 @@ def test_generate_move(board,side,moves_result):
     assert move_checking.moves == moves_result
 
 
-def test_get_process_time():
-    assert time.process_time() == main.get_time_ms()
+def test_get_time_ms():
+    assert numpy.isclose(time.process_time(), main.get_time_ms())
 
 @pytest.mark.parametrize('move,board_position, board_result',
                          [(main.set_move(main.square_representation.index('a2'),main.square_representation.index('a4'),0,0,1,0),

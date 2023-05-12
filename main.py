@@ -4,6 +4,7 @@ Trying out some chess engine stuff
 
 from random import randrange
 import time
+from timeit import default_timer as timer
 
 #defining the piece integer representation
 e, P, N, B, R, Q, K, p, n, b, r, q, k, o = range(14)
@@ -867,7 +868,7 @@ def check_mate():
     return checklist == []
 
 #loop over game
-def loop_game():
+def loop_game(depth):
     global attacked_own
     global attacked_enemy
     global attack_count
@@ -886,14 +887,13 @@ def loop_game():
         #print(attack_count)
 
         #get and make best move
-        best_move = chess_perft(3)
+        best_move = chess_perft(depth)
 
         #print best move and board
-        print("\nLoaded " + str(tree_size) + " moves in " + str(get_time_ms()) + " seconds.")
+        #print("\nLoaded " + str(tree_size) + " moves in " + str(get_time_ms()) + " seconds.")
         print("Best move: " + char_ascii[board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
         print_board()
         boards.append(board)
-        time.sleep(2)
 
         for pastboard in boards:
             if boards.count(pastboard) >= 3:
@@ -915,7 +915,10 @@ def loop_game():
 
 
 def main():
-    
+    global attacked_own
+    global attacked_enemy
+    global attack_count
+
     load_fen(start_position)
     print_stats()
     print_board()
@@ -924,10 +927,63 @@ def main():
     #if(is_position_attacked(4, side)):
     #   print("king under attack")
     #make the moves with depth 1
-
-    loop_game()
     
+    depth = 3
 
+    #loop_game(depth)
+
+    depth = 2
+    
+    fen_start = 'r1bq4/pp1p1k1p/2p2p1p/2b5/3Nr1Q1/2N1P3/PPPK1PPP/3R1B1R w - - 0 1'
+    fen_mid = '2kr3r/1p3pp1/p1nqbn1p/3p4/3P2P1/1BN2N2/PPP1QPBP/R4RK1 w - - 0 14'
+    fen_end = '8/8/4k3/3pP3/6K1/8/8/8 b - - 12 45'
+    
+    print("\n\n ----------Benchmark----------")
+
+    time.sleep(3)
+    
+    print("\n\n Earlygame position\n")
+
+    attacked_own = [1]
+    attacked_enemy = [1]
+    attack_count = 0
+
+    load_fen(fen_start)
+    start = timer()
+    best_move = chess_perft(depth)
+    print_board()
+    print("\nLoaded best move in " + str((timer() - start) * 1000.0) + " ms.")
+    print("Best move: " + char_ascii[board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
+
+    time.sleep(3)
+
+    print("\n\n Midgame position\n")
+
+    attacked_own = [1]
+    attacked_enemy = [1]
+    attack_count = 0 
+
+    load_fen(fen_mid)
+    start = timer()
+    best_move = chess_perft(depth)
+    print_board()
+    print("\nLoaded best move in " + str((timer() - start) * 1000.0) + " ms.")
+    print("Best move: " + char_ascii[board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
+
+    time.sleep(3)
+
+    print("\n\n Endgame position\n")
+
+    attacked_own = [1]
+    attacked_enemy = [1]
+    attack_count = 0
+
+    load_fen(fen_end) 
+    start = timer()
+    best_move = chess_perft(depth)
+    print_board()
+    print("\nLoaded best move in " + str((timer() - start) * 1000.0) + " ms.")
+    print("Best move: " + char_ascii[board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
 
 if __name__ == "__main__":
     main()
