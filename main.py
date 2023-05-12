@@ -2,7 +2,6 @@
 Trying out some chess engine stuff
 """
 
-import evaluate
 from random import randrange
 import time
 
@@ -714,6 +713,12 @@ def make_move(move):
 #define tree length
 tree_size = 0
 
+#add counters for best move evaluation
+attacked_own = [1]
+attacked_enemy = [1]
+attack_count = 0
+
+
 def get_time_ms():
     return time.process_time() 
 
@@ -731,7 +736,7 @@ def chess(depth):
 
     #generate move
     moves = Moves()
-    #moves.count = 0
+    moves.count = 0
     generate_move(moves)
 
     for move in moves:
@@ -750,13 +755,17 @@ def chess(depth):
         #only legal moves
         if not make_move(move):
             continue
-        if depth == 1:
-            inp = input(" ")
-            print_board()
+
+        #add counter if own piece can get captured
+        if side and get_move_capture(move):
+            attacked_own[attack_count] += 1
+        
+        #add counter if enemy piece can get captured 
+        elif not side and get_move_capture(move):
+            attacked_enemy[attack_count] += 1
+
         #recursive until depth = 0
         chess(depth - 1)
-        #test = input(" ")
-        #print_board()
         
         #restore board
         board = board_copy
@@ -766,11 +775,14 @@ def chess(depth):
 
     
 def chess_perft(depth):
+    #initializing access to global variables
     global tree_size
     global side
     global board
     global king_position
     global can_castle
+    global attack_count
+
     #generate move
     moves = Moves()
     #moves.count = 0
@@ -796,25 +808,79 @@ def chess_perft(depth):
         #recursive until depth = 0
         chess(depth - 1)
 
+        #increase attack count and add another entry to the attack arrays
+        if attack_count < moves.count - 1:
+            attack_count += 1
+            attacked_own.append(1)
+            attacked_enemy.append(1)
+
         #restore board
         board = board_copy
         king_position = king_position_copy
         side = side_copy
         can_castle = can_castle_copy
 
-    print("Loaded " + str(tree_size) + " moves in " + str(get_time_ms()) + " seconds.")
+    #comparing size of the counting lists
+    print(len(attacked_enemy))
+    print(len(attacked_own))
+    
+    #evaluate best move
+    for i in range (moves.count):
+        attacked_enemy[i] /= attacked_own[i]
+
+    #get move with highest amount of enemy captures
+    best_move = moves[attacked_enemy.index(max(attacked_enemy))]
+
+    #if move illegal pick second best move
+    if not make_move(best_move):
+        highest_index = attacked_enemy.index(max(attacked_enemy))
+        attacked_enemy[highest_index] = 0
+        second_best_move = moves[attacked_enemy.index(max(attacked_enemy))]
+
+        return second_best_move
+
+    return best_move
+
+
+
+
+#loop over game
+def loop_game():
+    global attacked_own
+    global attacked_enemy
+    global attack_count
+
+    #reset evaluation stats
+    attacked_own = [1]
+    attacked_enemy = [1]
+    attack_count = 0    
+
+    #print(attacked_own)
+    #print(attacked_enemy)
+    #print(attack_count)
+
+    #get and make best move
+    best_move = chess_perft(3)
+   
+    #print best move and board
+    print("\nLoaded " + str(tree_size) + " moves in " + str(get_time_ms()) + " seconds.")
+    print("Best move: " + char_ascii[board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
+    print_board()
+    
+    #make next move
+    loop_game()
 
 def main():
     
-    #load_fen('rnbqkbnr/ppppp1pp/5N2/4Q3/8/N7/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
     load_fen(start_position)
-    # print_attack()
     print_stats()
     print_board()
+    print("\n")
     #if(is_position_attacked(4, side)):
     #   print("king under attack")
     #make the moves with depth 1
-    chess_perft(4)
+
+    loop_game()
     
 
 
