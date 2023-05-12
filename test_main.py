@@ -143,7 +143,7 @@ def test_generate_move(board,side,moves_result):
     assert move_checking.moves == moves_result
 
 
-def test_get_time_ms():
+def test_get_process_time():
     assert time.process_time() == main.get_time_ms()
 
 @pytest.mark.parametrize('move,board_position, board_result',
