@@ -820,10 +820,6 @@ def chess_perft(depth):
         side = side_copy
         can_castle = can_castle_copy
 
-    #comparing size of the counting lists
-    print(len(attacked_enemy))
-    print(len(attacked_own))
-    
     #evaluate best move
     for i in range (moves.count):
         attacked_enemy[i] /= attacked_own[i]
@@ -831,13 +827,12 @@ def chess_perft(depth):
     #get move with highest amount of enemy captures
     best_move = moves[attacked_enemy.index(max(attacked_enemy))]
 
-    #if move illegal pick second best move
-    if not make_move(best_move):
+    #if move illegal pick next best move
+    while not make_move(best_move):
         highest_index = attacked_enemy.index(max(attacked_enemy))
+        print("found illegal move skipping to index " + str(highest_index))
         attacked_enemy[highest_index] = 0
-        second_best_move = moves[attacked_enemy.index(max(attacked_enemy))]
-
-        return second_best_move
+        best_move = moves[attacked_enemy.index(max(attacked_enemy))]
 
     return best_move
 
@@ -860,12 +855,15 @@ def loop_game():
     #print(attack_count)
 
     #get and make best move
-    best_move = chess_perft(3)
+    best_move = chess_perft(2)
    
     #print best move and board
     print("\nLoaded " + str(tree_size) + " moves in " + str(get_time_ms()) + " seconds.")
     print("Best move: " + char_ascii[board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
     print_board()
+
+    inp = input(" ")
+    #time.sleep(2)
     
     #make next move
     loop_game()
