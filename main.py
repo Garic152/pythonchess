@@ -837,42 +837,89 @@ def chess_perft(depth):
     return best_move
 
 
+def check_mate():
+    global tree_size
+    global side
+    global board
+    global king_position
+    global can_castle
+    global attack_count
 
+    moves = Moves()
+    # moves.count = 0
+    generate_move(moves)
+    checklist = []
+    for move in moves:
+        # copy board state
+        board_copy = board.copy()
+        king_position_copy = king_position.copy()
+        side_copy = side
+        can_castle_copy = can_castle
+
+        if not make_move(move):
+            continue
+        checklist.append(move)
+        # restore board
+        board = board_copy
+        king_position = king_position_copy
+        side = side_copy
+        can_castle = can_castle_copy
+    return checklist == []
 
 #loop over game
 def loop_game():
     global attacked_own
     global attacked_enemy
     global attack_count
+    checkmate = False
+    remi = False
+    boards = []
+    while not checkmate:
 
-    #reset evaluation stats
-    attacked_own = [1]
-    attacked_enemy = [1]
-    attack_count = 0    
+        #reset evaluation stats
+        attacked_own = [1]
+        attacked_enemy = [1]
+        attack_count = 0
 
-    #print(attacked_own)
-    #print(attacked_enemy)
-    #print(attack_count)
+        #print(attacked_own)
+        #print(attacked_enemy)
+        #print(attack_count)
 
-    #get and make best move
-    best_move = chess_perft(2)
-   
-    #print best move and board
-    print("\nLoaded " + str(tree_size) + " moves in " + str(get_time_ms()) + " seconds.")
-    print("Best move: " + char_ascii[board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
-    print_board()
+        #get and make best move
+        best_move = chess_perft(3)
 
-    inp = input(" ")
-    #time.sleep(2)
+        #print best move and board
+        print("\nLoaded " + str(tree_size) + " moves in " + str(get_time_ms()) + " seconds.")
+        print("Best move: " + char_ascii[board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
+        print_board()
+        boards.append(board)
+        time.sleep(2)
+
+        for pastboard in boards:
+            if boards.count(pastboard) >= 3:
+                Remi = True
+                checkmate = True
+        if checkmate == False:
+            checkmate = check_mate()
+
+        #inp = input(" ")
+        #time.sleep(2)
+
+        #make next move
+
     
-    #make next move
-    loop_game()
+    if Remi == True:
+        print("Remi")
+    else:
+        print("Checkmate")
+
 
 def main():
     
     load_fen(start_position)
     print_stats()
     print_board()
+    testlist =[]
     print("\n")
     #if(is_position_attacked(4, side)):
     #   print("king under attack")
