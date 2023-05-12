@@ -53,6 +53,18 @@ side = white
 #castling rights in bit representation, where 15 is 1111, meaning both sides can castle both on the queen and king side
 can_castle = 0
 
+#castling rights
+castling_rights = [
+    7, 15, 15, 15,  3, 15, 15, 11,  o, o, o, o, o, o, o, o,
+    15, 15, 15, 15, 15, 15, 15, 15,  o, o, o, o, o, o, o, o,
+    15, 15, 15, 15, 15, 15, 15, 15,  o, o, o, o, o, o, o, o,
+    15, 15, 15, 15, 15, 15, 15, 15,  o, o, o, o, o, o, o, o,
+    15, 15, 15, 15, 15, 15, 15, 15,  o, o, o, o, o, o, o, o,
+    15, 15, 15, 15, 15, 15, 15, 15,  o, o, o, o, o, o, o, o,
+    15, 15, 15, 15, 15, 15, 15, 15,  o, o, o, o, o, o, o, o,
+    13, 15, 15, 15, 12, 15, 15, 14,  o, o, o, o, o, o, o, o
+    ]
+
 #king position
 king_position = [116, 4]
 
@@ -639,6 +651,10 @@ def make_move(move):
     if promoted_piece:
         board[target] = promoted_piece
 
+    #change castling rights
+    can_castle &= castling_rights[position]
+    can_castle &= castling_rights[target]
+
     #castling moves
     if castling:
         match target:
@@ -665,7 +681,7 @@ def make_move(move):
 
 def main():
     
-    load_fen('r3k2r/p1Ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1')
+    load_fen('r3k2r/pPPpqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1')
     # print_attack()
     print_stats()
     print_board()
@@ -678,10 +694,11 @@ def main():
 
     #create test move
     #move = moves[randrange(moves.count)]
-    move = set_move(116, 114, 0, 0, 0, 1)
+    move = set_move(17, 0, Q, 1, 0, 0)
     make_move(move)
 
     print_board()
+    print_stats()
 
 if __name__ == "__main__":
     main()
