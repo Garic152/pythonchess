@@ -38,7 +38,7 @@ square_representation = [
 
 char_ascii = '.PNBRQKpnbrqk'
 char_sides = 'wb'
-
+countercheck = 0
 
 #from ascii to normal chars
 char_pieces = {'P': P, 'N': N, 'B': B, 'R': R, 'Q': Q, 'K': K, 'p': p, 'n': n, 'b': b, 'r': r, 'q': q, 'k': k}
@@ -205,6 +205,7 @@ def is_position_attacked(position, side):
             if not ((position + move) & 0x88) and board[position + move] == k:
                 return True
 
+
     # attacked by Bishop and Queen
     for move in bishop_movement:
         # creates new temp position
@@ -213,9 +214,10 @@ def is_position_attacked(position, side):
         # loop through all the available positions for one move
         while not ((new_position) & 0x88):
             # grabs the piece at current position
+
             target = board[new_position]
 
-            # checks if the position is attacked by B
+            # checks if the position is attacked by B & Q
             if (
                 (target == B or target == Q)
                 if not side
@@ -248,7 +250,7 @@ def is_position_attacked(position, side):
                 break
 
             new_position += move
-
+    return 0
 
 def print_attack():
     # loop over column
@@ -338,7 +340,6 @@ def load_fen(fen):
 
 # move generation
 def generate_move(move):
-
     # loop over all positions on the board
     for position in range(128):
         if not position & 0x88:
@@ -628,12 +629,15 @@ def make_move(move):
     global board
     global king_position
     global can_castle
+    global countercheck
+
 
     #define board state copy variable
     board_copy = [0] * 128
     king_position_copy = [2]
     side_copy = 0
     can_castle_copy = 0
+
 
     #copy board state
     board_copy = board.copy()
@@ -648,6 +652,10 @@ def make_move(move):
     castling = get_move_castling(move)
 
     #print("Moving " + square_representation[position] + " to " + square_representation[target])
+
+    #if target is king
+    if board[target] == K or board[target] == k:
+        return 0
 
     #make the move
     board[target] = board[position]
@@ -687,19 +695,19 @@ def make_move(move):
     #print("Moving " + square_representation[position] + " to " + square_representation[target])
 
     #is king attacked
-    if is_position_attacked(king_position[side ^ 1] if not side else king_position[side ^ 1], side):
+    if is_position_attacked(king_position[side^1], side):
         
         #illegal move
-
         #restore board
         board = board_copy
         king_position = king_position_copy
         side = side_copy
         can_castle = can_castle_copy
-        return 1
+        return 0
 
     else:
         #legal move
+
         return 1
 
 
@@ -726,13 +734,13 @@ def chess(depth):
     #moves.count = 0
     generate_move(moves)
 
-    for move_count in range (moves.count):
+    for move in moves:
         #define board state copy variable
         board_copy = [0] * 128
         king_position_copy = [2]
         side_copy = 0
         can_castle_copy = 0
-
+        
         #copy board state
         board_copy = board.copy()
         king_position_copy = king_position.copy()
@@ -740,14 +748,16 @@ def chess(depth):
         can_castle_copy = can_castle
 
         #only legal moves
-        if not make_move(moves[move_count]): 
+        if not make_move(move):
             continue
-
+        if depth == 1:
+            inp = input(" ")
+            print_board()
         #recursive until depth = 0
         chess(depth - 1)
-        test = input(" ")
-        print_board()
-
+        #test = input(" ")
+        #print_board()
+        
         #restore board
         board = board_copy
         king_position = king_position_copy
@@ -761,13 +771,12 @@ def chess_perft(depth):
     global board
     global king_position
     global can_castle
-
     #generate move
     moves = Moves()
     #moves.count = 0
     generate_move(moves)
 
-    for move_count in range (moves.count):
+    for move in moves:
         #define board state copy variable
         board_copy = [0] * 128
         king_position_copy = [2]
@@ -781,7 +790,7 @@ def chess_perft(depth):
         can_castle_copy = can_castle
 
         #only legal moves
-        if not make_move(moves[move_count]): 
+        if not make_move(move):
             continue
 
         #recursive until depth = 0
@@ -797,13 +806,16 @@ def chess_perft(depth):
 
 def main():
     
+    #load_fen('rnbqkbnr/ppppp1pp/5N2/4Q3/8/N7/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
     load_fen(start_position)
     # print_attack()
     print_stats()
     print_board()
-
+    #if(is_position_attacked(4, side)):
+    #   print("king under attack")
     #make the moves with depth 1
-    chess_perft(3)
+    chess_perft(4)
+    
 
 
 if __name__ == "__main__":
