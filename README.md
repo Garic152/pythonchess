@@ -25,6 +25,7 @@ And for windows
 venv/Scripts/activate
 ```
 
+After that install the requirements for this project
 ```
 pip install -r requirements.txt
 pip install -e .
