@@ -6,6 +6,8 @@ from random import randrange
 import time
 from timeit import default_timer as timer
 
+import evaluate
+
 #defining the piece integer representation
 e, P, N, B, R, Q, K, p, n, b, r, q, k, o = range(14)
 
@@ -869,6 +871,8 @@ def loop_game(depth):
 
 
 def main():
+    allowed_time = 2
+
     load_fen(start_position)
     print_stats()
     print_board()
