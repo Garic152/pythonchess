@@ -4,9 +4,8 @@ Trying out some chess engine stuff
 
 from random import randrange
 import time
-from timeit import default_timer as timer
 
-import evaluate
+import alphabeta
 
 #defining the piece integer representation
 e, P, N, B, R, Q, K, p, n, b, r, q, k, o = range(14)
@@ -744,13 +743,13 @@ def chess(depth, board):
         
         board.undo_move()
 
-        return moves[randrange(0, moves.count)]
     
 def chess_perft(depth, board):
     #generate move
     moves = Moves()
     #moves.count = 0
     generate_move(moves, board)
+    print(moves)
 
     for move in moves:
         board.copy_move()
@@ -784,32 +783,34 @@ def check_mate(board):
     return checklist == []
 
 #loop over game
-def loop_game(depth, board):
+def loop_game(depth, allowed_time, board):
     checkmate = False
     remi = False
     boards = []
     while not checkmate:
 
         #get and make best move
-        best_move = chess_perft(depth, board)
+        best_move = alphabeta.minimax(allowed_time, depth, board)
+        #best_move = chess_perft(depth, board)
         make_move(best_move, board)
 
         #print best move and board
         print("Best move: " + char_ascii[board.board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
         print_board(board)
-
-        boards.append(board.board)
-        for pastboard in boards:
-            if boards.count(pastboard) >= 3:
-                Remi = True
-                checkmate = True
-        if checkmate == False:
-            checkmate = check_mate(board)
- 
-    if Remi == True:
-        print("Remi")
-    else:
-        print("Checkmate")
+        inp = input(" ")
+    #
+    #    boards.append(board.board)
+    #    for pastboard in boards:
+    #        if boards.count(pastboard) >= 3:
+    #            Remi = True
+    #            checkmate = True
+    #    if checkmate == False:
+    #        checkmate = check_mate(board)
+# 
+    #if Remi == True:
+    #    print("Remi")
+    #else:
+    #    print("Checkmate")
 
 
 def main():
@@ -823,7 +824,7 @@ def main():
     #testlist =[]
     #print("\n")
 
-    loop_game(2, board)
+    loop_game(1, allowed_time, board)
 
     print(tree_size)
     #make the moves with depth 1

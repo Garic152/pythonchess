@@ -857,7 +857,6 @@ def loop_game(depth):
 
         #print best move and board
         print("Best move: " + char_ascii[board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
-        print_board()
 
         boards.append(board)
         for pastboard in boards:
@@ -881,8 +880,8 @@ def main():
     print_board()
     testlist =[]
     print("\n")
-
-    loop_game(3)
+    loop_game(4)
+    print(tree_size)
     #make the moves with depth 1
     
 if __name__ == "__main__":
