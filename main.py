@@ -11,6 +11,12 @@ import evaluate
 #defining the piece integer representation
 e, P, N, B, R, Q, K, p, n, b, r, q, k, o = range(14)
 
+#define board state copy variable
+board_copy = [0] * 128
+king_position_copy = [2]
+side_copy = 0
+can_castle_copy = 0
+
 white, black = range(2)
 
 Castling = {'KC': 1, 'QC': 2, 'kc': 4, 'qc': 8}
@@ -625,6 +631,42 @@ def generate_move(move):
                         current_movement += movement
                         target += movement
 
+def copy_move():
+    global side_copy
+    global board_copy
+    global king_position_copy
+    global can_castle_copy
+
+    #copy board state
+    board_copy = board.copy()
+    king_position_copy = king_position.copy()
+    side_copy = side
+    can_castle_copy = can_castle
+
+
+def undo_move():
+    global side
+    global board
+    global king_position
+    global can_castle
+
+    global side_copy
+    global board_copy
+    global king_position_copy
+    global can_castle_copy
+
+    #undo board state
+    board = board_copy.copy()
+    king_position = king_position_copy.copy()
+    side = side_copy
+    can_castle = can_castle_copy
+
+    #reset copy variables
+    board_copy = [0] * 128
+    king_position_copy = [2]
+    side_copy = 0
+    can_castle_copy = 0
+
 #make move
 def make_move(move):
     global side
@@ -632,20 +674,8 @@ def make_move(move):
     global king_position
     global can_castle
     global countercheck
-
-
-    #define board state copy variable
-    board_copy = [0] * 128
-    king_position_copy = [2]
-    side_copy = 0
-    can_castle_copy = 0
-
-
-    #copy board state
-    board_copy = board.copy()
-    king_position_copy = king_position.copy()
-    side_copy = side
-    can_castle_copy = can_castle
+    
+    copy_move()
 
     #get current and target position
     position = get_move_source(move)
@@ -698,13 +728,8 @@ def make_move(move):
 
     #is king attacked
     if is_position_attacked(king_position[side^1], side):
-        
-        #illegal move
-        #restore board
-        board = board_copy
-        king_position = king_position_copy
-        side = side_copy
-        can_castle = can_castle_copy
+        #undo move 
+        undo_move()
         return 0
 
     else:
@@ -737,17 +762,7 @@ def chess(depth):
     generate_move(moves)
 
     for move in moves:
-        #define board state copy variable
-        board_copy = [0] * 128
-        king_position_copy = [2]
-        side_copy = 0
-        can_castle_copy = 0
-        
-        #copy board state
-        board_copy = board.copy()
-        king_position_copy = king_position.copy()
-        side_copy = side
-        can_castle_copy = can_castle
+        copy_move()
 
         #only legal moves
         if not make_move(move):
@@ -756,12 +771,7 @@ def chess(depth):
         #recursive until depth = 0
         chess(depth - 1)
         
-        #restore board
-        board = board_copy
-        king_position = king_position_copy
-        side = side_copy
-        can_castle = can_castle_copy
-
+        undo_move()
     
 def chess_perft(depth):
     #initializing access to global variables
