@@ -631,7 +631,7 @@ def generate_move(move):
                         current_movement += movement
                         target += movement
 
-def copy_move():
+def copy_board_state():
     global side_copy
     global board_copy
     global king_position_copy
@@ -675,7 +675,7 @@ def make_move(move):
     global can_castle
     global countercheck
     
-    copy_move()
+    copy_board_state()
 
     #get current and target position
     position = get_move_source(move)
@@ -762,7 +762,7 @@ def chess(depth):
     generate_move(moves)
 
     for move in moves:
-        copy_move()
+        copy_board_state()
 
         #only legal moves
         if not make_move(move):
