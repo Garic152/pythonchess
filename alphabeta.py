@@ -1,8 +1,8 @@
 import time
 
-import evaluate as evaluate
-import main_copy as main
-from main_copy import Moves
+import evaluate
+import main
+from main import Moves
 
 def minimax(allowed_time: int, depth: int, board: main.Board):
     #define for which side minimax should run
