@@ -949,5 +949,3 @@ def main():
     
 if __name__ == "__main__":
     main()
-
-#piece_lists schould be worked in make move 

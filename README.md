@@ -36,21 +36,10 @@ You can now run the project file with
 pyhton main.py
 ```
 
-### First Checklist until 12.05.2023
+### Milestone II
 
-- \[X\] FEN Loader
-- \[X\] General Movement Rules
-- \[X\] Piece Movement
-- \[X\] Code Framework
-- \[X\] Move Generator
-- \[X\] Time Management
-- \[X\] Pick move
-- \[X\] Unit tests
-- \[X\] Benchmarks
-
-### Documentation TODO's
-
-- \[X\] Class diagram
-- \[X\] Plots of benchmarks
-- \[X\] Future plans
-- \[X\] Screencast
+- \[X\] Alpha-beta search
+- \[ \] Sophisticated Better evaluation function
+- \[ \] Unit tests for legal moves
+- \[X\] Unit tests for chess engine
+- \[ \] Benchmarks that test different depths
