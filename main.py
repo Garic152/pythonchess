@@ -912,6 +912,7 @@ def main():
     #position = 117
     #target = 82
 
+    #piece_positions = evaluate.get_piece_positions_from_letter(char_ascii[board.board[position]],board)
     #print(piece_positions)
     #piece_positions.remove(position)
     #piece_positions.append(target)
