@@ -5,6 +5,7 @@ Trying out some chess engine stuff
 from random import randrange
 import time
 
+import evaluate
 import alphabeta
 
 #defining the piece integer representation
@@ -721,6 +722,7 @@ def make_move(move, board:Board):
     target = get_move_target(move)
     promoted_piece = get_move_piece(move)
     castling = get_move_castling(move)
+    capture = get_move_capture(move)
 
     #if target is king
     if board.board[target] == K or board.board[target] == k:
@@ -730,9 +732,7 @@ def make_move(move, board:Board):
     if board.board[position] == e:      #check if there is a piece on board.board[position]
         board.undo_move()
         return 0  #it is not enough i had to make one more check
-    #make the move
-    board.board[target] = board.board[position]
-    board.board[position] = e
+    
 
 
     #update piece position
@@ -742,22 +742,29 @@ def make_move(move, board:Board):
     #update king position
     if board.board[position] == K or board.board[position] == k:
         board.king_position[board.side] = target
-    else:
+    #update other pieces positions
+    elif board.board[position] != K or board.board[position] != k:
         if char_ascii[board.board[position]] == '.': 
             board.undo_move()
             return 0  #the second check. first was in line 730
+        if capture:
+            captured_piece_list_position = get_piece_positions_from_letter(char_ascii[board.board[target]],board)
+            captured_piece_list_position.remove(target)
+
         piece_positions = get_piece_positions_from_letter(char_ascii[board.board[position]],board)
-        print("piece_positions")
-        print(piece_positions)
-        print(position)
+
         piece_positions.remove(position)
         #promoted pawn
         if promoted_piece:
             board.board[target] = promoted_piece
             promotions_positions = get_piece_positions_from_letter(char_ascii[board.board[target]],board)
             promotions_positions.append(target)
-        else:    #regular move
+        elif not promoted_piece:    #regular move
             piece_positions.append(target)
+    
+    #make the move
+    board.board[target] = board.board[position]
+    board.board[position] = e
 
     #castling moves
     if castling:
@@ -917,32 +924,26 @@ def main():
     board = Board()
 
     allowed_time = 2
-    load_fen(fen, board)
+    fen1 = 'r3k3/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N4p/PPPBBPPP/R3K3 w KQkq - 0 1'
+    fen2 = 'r7/P7/8/8/8/8/8/8 b KQkq - 0 1'
+    load_fen(fen1, board)
     print_stats(board)
     print_board(board)
-    piece_positions = get_piece_positions_from_letter(char_ascii[r],board)
-    print(piece_positions)
-    #load_fen("r1b1k1nr/p2pNpNp/n2B4/1pNNP2P/6P1/3PNQ2/P1P1K3/q5b1 w KQkq - 0 1",board)
-    #print_board(board)
-    #print("king position:")
-    #print(board.king_position)    
-    #print("knight position:")
-    #print(board.night_position)
-    #print("white knight position:")
-    #print(len(board.night_position[white]))
+
+    nights = get_piece_positions_from_letter("N",board)
+    print(f"white knights are on: {nights}")
+    pawns = get_piece_positions_from_letter("p",board)
+    print(f"white pawns are on: {pawns}")
+    print("make move: e5 to d7")
+
+    make_move(set_move(square_representation.index("e5"),square_representation.index("d7"),0,1,0,0),board)
+    print(f"white knights are now on: {nights}")
+    print(f"white pawns are now on: {pawns}")
+
     testlist =[]
-    print("\n")
-    #position = 117
-    #target = 82
 
-    #piece_positions = get_piece_positions_from_letter(char_ascii[board.board[position]],board)
-    #print(piece_positions)
-    #piece_positions.remove(position)
-    #piece_positions.append(target)
-    #print(piece_positions)
-
-    loop_game(1, allowed_time, board)
-
+    #loop_game(1, allowed_time, board)
+    
     print(tree_size)
     #make the moves with depth 1
     

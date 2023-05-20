@@ -1,4 +1,4 @@
-import main 
+white, black = range(2)
 
 pawn_value = 100
 night_value = 300
@@ -6,19 +6,16 @@ bishop_value = 300
 rook_value = 500
 queen_value = 900
 
-def evaluate( board:main.Board, side):
-    white_eval = count_material(board, main.white)
-    black_eval = count_material(board, main.black)
+def evaluate( board, side):
+    white_eval = count_material(board,white)
+    black_eval = count_material(board, black)
 
     evaluation = white_eval - black_eval
 
-    perspective = 1 if side == main.white else -1
+    perspective = 1 if side == white else -1
     return evaluation * perspective
-#def evalute():
-#
-#    return 0
-#
-def count_material(board:main.Board, side):
+
+def count_material(board, side):
     material_value = 0
     material_value += len(board.pawn_position[side]) * pawn_value
     material_value += len(board.night_position[side]) * night_value
