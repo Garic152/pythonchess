@@ -730,9 +730,7 @@ def make_move(move, board:Board):
     if board.board[position] == e:      #check if there is a piece on board.board[position]
         board.undo_move()
         return 0  #it is not enough i had to make one more check
-    #make the move
-    board.board[target] = board.board[position]
-    board.board[position] = e
+
 
 
     #update piece position
@@ -795,7 +793,11 @@ def make_move(move, board:Board):
     board.side ^= 1
 
     #print("Moving " + square_representation[position] + " to " + square_representation[target])
-
+    
+    #make the move
+    board.board[target] = board.board[position]
+    board.board[position] = e
+    
     #is king attacked
     if is_position_attacked(board.king_position[board.side^1], board, board.side):
         #undo move 
