@@ -47,8 +47,8 @@ def alpha_beta(depth: int, maximize: bool, board):
 def alpha_beta_max(alpha, beta, depth, board):
     #check if depth is 0, if yes evaluate and return the current board
     if depth == 0:
+        return evaluate.evaluate(board, board.side)
         #return evaluate(board)
-        pass
 
     moves = Moves()
     main.generate_move(moves, board)
@@ -74,7 +74,7 @@ def alpha_beta_min(alpha, beta, depth, board):
     #check if depth is 0, if yes evaluate and return the current board
     if depth == 0:
         #return evaluate(board)
-        pass
+        return evaluate.evaluate(board, board.side)
 
     moves = Moves()
     main.generate_move(moves, board)

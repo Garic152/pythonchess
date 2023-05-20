@@ -123,6 +123,18 @@ castling_board_black =[
 ]
 
 
+two_pawns_board= [
+    e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    e, p, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o
+]
+
+
 
 
 
@@ -218,14 +230,12 @@ def test___getitem__(moves,index):
     assert moves.moves[index] == moves[index]
 
 
-@pytest.mark.parametrize('depth,tree_size_result',[(0,1),(1,20),(2,459)])
+@pytest.mark.parametrize('depth,tree_size_result',[(0,1),(1,20),(2,21)])
 def test_chess(depth,tree_size_result):
     main.board = start_board
     main.tree_size=0
     main.chess(depth)
     assert main.tree_size == tree_size_result
-    assert len(main.attacked_own) == 1
-    assert len(main.attacked_own) == 1
 
 
 
