@@ -5,6 +5,7 @@ Trying out some chess engine stuff
 from random import randrange
 import time
 
+import evaluate
 import alphabeta
 
 #defining the piece integer representation
@@ -333,31 +334,6 @@ def print_stats(board):
     print("Castling: " + str(bin(board.can_castle)[2:]).rjust(4, "0"))
 
 
-def get_piece_positions_from_letter(letter, board:Board):
-    match letter:
-        case 'p':
-            return board.pawn_position[black]
-        case 'P':
-            return board.pawn_position[white]
-        case 'n':
-            return board.night_position[black]        
-        case 'N':
-            return board.night_position[white]
-        case 'b':
-            return board.bishop_position[black]
-        case 'B':
-            return board.bishop_position[white]
-        case 'r':
-            return board.rook_position[black]
-        case 'R':
-            return board.rook_position[white]       
-        case 'q':
-            return board.queen_position[black]
-        case 'Q':
-            return board.queen_position[white]
-        case '.':
-            print("wtf?")
-            return board.queen_position[white]
 
 
 
@@ -386,7 +362,7 @@ def load_fen(fen, board:Board):
                     elif (fen[fen_position] == 'k'):
                         board.king_position[black] = position
                     else:
-                        get_piece_positions_from_letter(fen[fen_position],board).append(position)
+                        evaluate.get_piece_positions_from_letter(fen[fen_position],board).append(position)
                     
 
                     # set current board position to fen piece
@@ -746,7 +722,7 @@ def make_move(move, board:Board):
         if char_ascii[board.board[position]] == '.': 
             board.undo_move()
             return 0  #the second check. first was in line 730
-        piece_positions = get_piece_positions_from_letter(char_ascii[board.board[position]],board)
+        piece_positions = evaluate.get_piece_positions_from_letter(char_ascii[board.board[position]],board)
         print("piece_positions")
         print(piece_positions)
         print(position)
@@ -754,7 +730,7 @@ def make_move(move, board:Board):
         #promoted pawn
         if promoted_piece:
             board.board[target] = promoted_piece
-            promotions_positions = get_piece_positions_from_letter(char_ascii[board.board[target]],board)
+            promotions_positions = evaluate.get_piece_positions_from_letter(char_ascii[board.board[target]],board)
             promotions_positions.append(target)
         elif not promoted_piece:    #regular move
             piece_positions.append(target)
@@ -763,25 +739,25 @@ def make_move(move, board:Board):
     if castling:
         match target:
             case 118:
-                help_positions = get_piece_positions_from_letter('R',board)
+                help_positions = evaluate.get_piece_positions_from_letter('R',board)
                 help_positions.append(117)
                 help_positions.remove(119)
                 board.board[117] = board.board[119]
                 board.board[119] = e    #white
             case 6:
-                help_positions = get_piece_positions_from_letter('r',board)
+                help_positions = evaluate.get_piece_positions_from_letter('r',board)
                 help_positions.append(5)
                 help_positions.remove(7)
                 board.board[5] = board.board[7]
                 board.board[7] = e      #black
             case 114:
-                help_positions = get_piece_positions_from_letter('R',board)
+                help_positions = evaluate.get_piece_positions_from_letter('R',board)
                 help_positions.append(115)
                 help_positions.remove(112)
                 board.board[115] = board.board[112]
                 board.board[112] = e    #white
             case 2:
-                help_positions = get_piece_positions_from_letter('r',board)
+                help_positions = evaluate.get_piece_positions_from_letter('r',board)
                 help_positions.append(3)
                 help_positions.remove(0)
                 board.board[3] = board.board[0]
@@ -913,15 +889,16 @@ def loop_game(depth, allowed_time, board):
 
 
 def main():
-
-    board = Board()
-
     allowed_time = 2
-    load_fen(fen, board)
+    board = Board()
+    fen1 = 'r3k3/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N4p/PPPBBPPP/R3K3 w KQkq - 0 1'
+    fen2 = 'r7/P7/8/8/8/8/8/8 w KQkq - 0 1'
+    load_fen(fen2, board)
     print_stats(board)
     print_board(board)
-    piece_positions = get_piece_positions_from_letter(char_ascii[r],board)
-    print(piece_positions)
+    
+    print("eval für white")
+    print(evaluate.evaluate(board,white))
     #load_fen("r1b1k1nr/p2pNpNp/n2B4/1pNNP2P/6P1/3PNQ2/P1P1K3/q5b1 w KQkq - 0 1",board)
     #print_board(board)
     #print("king position:")
@@ -935,15 +912,14 @@ def main():
     #position = 117
     #target = 82
 
-    #piece_positions = get_piece_positions_from_letter(char_ascii[board.board[position]],board)
     #print(piece_positions)
     #piece_positions.remove(position)
     #piece_positions.append(target)
     #print(piece_positions)
 
-    loop_game(1, allowed_time, board)
+    #loop_game(1, allowed_time, board)
 
-    print(tree_size)
+    #print(tree_size)
     #make the moves with depth 1
     
 if __name__ == "__main__":
