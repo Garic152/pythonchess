@@ -742,7 +742,7 @@ def make_move(move, board:Board):
     #update king position
     if board.board[position] == K or board.board[position] == k:
         board.king_position[board.side] = target
-    else:
+    elif board.board[position] != K or board.board[position] != k:
         if char_ascii[board.board[position]] == '.': 
             board.undo_move()
             return 0  #the second check. first was in line 730
@@ -756,7 +756,7 @@ def make_move(move, board:Board):
             board.board[target] = promoted_piece
             promotions_positions = get_piece_positions_from_letter(char_ascii[board.board[target]],board)
             promotions_positions.append(target)
-        else:    #regular move
+        elif not promoted_piece:    #regular move
             piece_positions.append(target)
 
     #castling moves
