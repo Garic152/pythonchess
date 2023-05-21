@@ -39,7 +39,7 @@ pyhton main.py
 ### Milestone II
 
 - \[X\] Alpha-beta search
-- \[X\] Sophisticated Better evaluation function
+- \[ \] Sophisticated Better evaluation function
 - \[ \] Unit tests for legal moves
 - \[X\] Unit tests for chess engine
 - \[ \] Benchmarks that test different depths

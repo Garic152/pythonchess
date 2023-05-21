@@ -7,7 +7,6 @@ from main import Moves
 def minimax(allowed_time: int, depth: int, board: main.Board):
     #define for which side minimax should run
     maximize = board.side
-    best_value = -float("inf") if maximize else float("inf")
     
     #init time for time_management
     timer = time.time()
@@ -33,14 +32,7 @@ def minimax(allowed_time: int, depth: int, board: main.Board):
         value = alpha_beta(depth - 1, not maximize, board)
         board.undo_move()
 
-        if maximize and value >= best_value:
-            best_value = value
-            best_move = move
-        elif not maximize and value <= best_value:
-            best_value = value
-            best_move = move
-
-    return best_move
+    return moves[0]
 
 
 def alpha_beta(depth: int, maximize: bool, board):
@@ -55,8 +47,8 @@ def alpha_beta(depth: int, maximize: bool, board):
 def alpha_beta_max(alpha, beta, depth, board):
     #check if depth is 0, if yes evaluate and return the current board
     if depth == 0:
-        return evaluate.evaluate(board, board.side)
         #return evaluate(board)
+        pass
 
     moves = Moves()
     main.generate_move(moves, board)
@@ -82,7 +74,7 @@ def alpha_beta_min(alpha, beta, depth, board):
     #check if depth is 0, if yes evaluate and return the current board
     if depth == 0:
         #return evaluate(board)
-        return evaluate.evaluate(board, board.side)
+        pass
 
     moves = Moves()
     main.generate_move(moves, board)
