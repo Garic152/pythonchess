@@ -4,6 +4,7 @@ Trying out some chess engine stuff
 
 from random import randrange
 import time
+import copy
 
 import evaluate
 import alphabeta
@@ -111,26 +112,26 @@ class Board:
 
     def copy_move(self):
         #copy board state
-        self.board_copy = self.board.copy()
-        self.king_position_copy = self.king_position.copy()
-        self.pawn_position_copy = self.pawn_position.copy()
-        self.night_position_copy = self.night_position.copy()
-        self.bishop_position_copy = self.bishop_position.copy()
-        self.rook_position_copy = self.rook_position.copy()
-        self.queen_position_copy = self.queen_position.copy()
+        self.board_copy = copy.deepcopy(self.board)
+        self.king_position_copy = copy.deepcopy(self.king_position)
+        self.pawn_position_copy = copy.deepcopy(self.pawn_position)
+        self.night_position_copy = copy.deepcopy(self.night_position)
+        self.bishop_position_copy = copy.deepcopy(self.bishop_position)
+        self.rook_position_copy = copy.deepcopy(self.rook_position)
+        self.queen_position_copy = copy.deepcopy(self.queen_position)
         self.side_copy = self.side
         self.can_castle_copy = self.can_castle
 
 
     def undo_move(self):
         #undo board state
-        self.board = self.board_copy.copy()
-        self.king_position = self.king_position_copy.copy()
-        self.pawn_position = self.pawn_position_copy.copy()
-        self.night_position = self.night_position_copy.copy()
-        self.bishop_position = self.bishop_position_copy.copy()
-        self.rook_position = self.rook_position_copy.copy()
-        self.queen_position = self.queen_position_copy.copy()
+        self.board = copy.deepcopy(self.board_copy)
+        self.king_position = copy.deepcopy(self.king_position_copy)
+        self.pawn_position = copy.deepcopy(self.pawn_position_copy)
+        self.night_position = copy.deepcopy(self.night_position_copy)
+        self.bishop_position = copy.deepcopy(self.bishop_position_copy)
+        self.rook_position = copy.deepcopy(self.rook_position_copy)
+        self.queen_position = copy.deepcopy(self.queen_position_copy)
 
         self.side = self.side_copy
         self.can_castle = self.can_castle_copy
@@ -903,23 +904,8 @@ def main():
     print(evaluate.evaluate(board,white))
     #load_fen("r1b1k1nr/p2pNpNp/n2B4/1pNNP2P/6P1/3PNQ2/P1P1K3/q5b1 w KQkq - 0 1",board)
     #print_board(board)
-    #print("king position:")
-    #print(board.king_position)    
-    #print("knight position:")
-    #print(board.night_position)
-    #print("white knight position:")
-    #print(len(board.night_position[white]))
     testlist =[]
     print("\n")
-    #position = 117
-    #target = 82
-
-    #piece_positions = evaluate.get_piece_positions_from_letter(char_ascii[board.board[position]],board)
-    #print(piece_positions)
-    #piece_positions.remove(position)
-    #piece_positions.append(target)
-    #print(piece_positions)
-
     #loop_game(1, allowed_time, board)
 
     #print(tree_size)
