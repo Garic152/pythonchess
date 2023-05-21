@@ -5,6 +5,7 @@ Trying out some chess engine stuff
 from random import randrange
 import time
 import copy
+import alphabeta
 import evaluate
 
 
@@ -699,10 +700,6 @@ def make_move(move, board:Board):
     if board.board[target] == K or board.board[target] == k:
         return 0
 
-    
-
-    
-
     #update king position
     if board.board[position] == K or board.board[position] == k:
         board.king_position[board.side] = target
@@ -856,8 +853,8 @@ def loop_game(depth, allowed_time, board):
     while not checkmate:
 
         #get and make best move
-        #best_move = alphabeta.minimax(allowed_time, depth, board)
-        best_move = chess_perft(depth, board)
+        best_move = alphabeta.minimax(allowed_time, depth, board)
+        #best_move = chess_perft(depth, board)
         make_move(best_move, board)
 
         #print best move and board
