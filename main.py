@@ -790,31 +790,29 @@ def loop_game(depth, allowed_time, board):
     while not checkmate:
 
         #get and make best move
-        best_move = alphabeta.minimax(allowed_time, depth, board)
-        #best_move = chess_perft(depth, board)
+        #best_move = alphabeta.minimax(allowed_time, depth, board)
+        best_move = chess_perft(depth, board)
         make_move(best_move, board)
 
         #print best move and board
         print("Best move: " + char_ascii[board.board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
         print_board(board)
         inp = input(" ")
-    #
-    #    boards.append(board.board)
-    #    for pastboard in boards:
-    #        if boards.count(pastboard) >= 3:
-    #            Remi = True
-    #            checkmate = True
-    #    if checkmate == False:
-    #        checkmate = check_mate(board)
-# 
-    #if Remi == True:
-    #    print("Remi")
-    #else:
-    #    print("Checkmate")
+        boards.append(board.board)
+        for pastboard in boards:
+            if boards.count(pastboard) >= 3:
+                remi = True
+                checkmate = True
+        if not checkmate:
+            checkmate = check_mate(board)
+    if remi:
+        print("Remi")
+    else:
+        print("Checkmate")
 
 
 def main():
-
+    starttime = get_time_ms()
     board = Board()
 
     allowed_time = 2
@@ -824,10 +822,17 @@ def main():
     #testlist =[]
     #print("\n")
 
-    loop_game(1, allowed_time, board)
+    loop_game(2, allowed_time, board)
 
     print(tree_size)
     #make the moves with depth 1
-    
+
+
+    # safe Benchmark
+    with open("benchmark.txt", 'w') as my_file:
+        my_file.write('With FEN: ' + start_position + '\n')
+        my_file.write('Runtime = ' + str(get_time_ms() - starttime))
+
+
 if __name__ == "__main__":
     main()
