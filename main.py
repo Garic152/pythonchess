@@ -707,7 +707,7 @@ def make_move(move, board:Board):
         if board.board[position] == e: 
             board.undo_move()
             return 0  #the second check. first was in line 730
-        print("Best move: " + char_ascii[board.board[get_move_source(move)]] + " on "  + square_representation[get_move_source(move)] + " to " + square_representation[get_move_target(move)])
+        #print("Best move: " + char_ascii[board.board[get_move_source(move)]] + " on "  + square_representation[get_move_source(move)] + " to " + square_representation[get_move_target(move)])
         piece_positions = evaluate.get_piece_positions_from_letter(char_ascii[board.board[position]],board)
         piece_positions.remove(position)
         #promote pawn
@@ -776,6 +776,7 @@ def make_move(move, board:Board):
 
 #define tree length
 tree_size = 0
+
 
 def get_time_ms():
     return time.process_time() 
@@ -853,7 +854,9 @@ def loop_game(depth, allowed_time, board):
     while not checkmate:
 
         #get and make best move
+        boardcopy = copy.deepcopy(board)
         best_move = alphabeta.minimax(allowed_time, depth, board)
+        board = copy.deepcopy(boardcopy)
         #best_move = chess_perft(depth, board)
         make_move(best_move, board)
 
@@ -885,7 +888,7 @@ def main():
     #testlist =[]
     #print("\n")
 
-    loop_game(1, allowed_time, board)
+    loop_game(3, allowed_time, board)
 
     print(tree_size)
     #make the moves with depth 1
