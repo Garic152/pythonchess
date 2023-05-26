@@ -763,13 +763,14 @@ def make_move(move, board: Board):
         board.king_position[board.side] = target
     if board.board[position] != K and board.board[position] != k:
         if board.board[position] == e:
-            board.undo_move()
             return 0  # the second check. first was in line 730
-        # print("Best move: " + char_ascii[board.board[get_move_source(move)]] + " on "  + square_representation[get_move_source(move)] + " to " + square_representation[get_move_target(move)])
+        
         piece_positions = evaluate.get_piece_positions_from_letter(
             char_ascii[board.board[position]], board
         )
+
         piece_positions.remove(position)
+
         # promote pawn
         if promoted_piece:
             board.board[target] = promoted_piece
@@ -916,6 +917,7 @@ def loop_game(depth, allowed_time, board):
         boardcopy = copy.deepcopy(board)
         best_move = alphabeta.minimax(allowed_time, depth, board)
         board = copy.deepcopy(boardcopy)
+
         # best_move = chess_perft(depth, board)
         make_move(best_move, board)
 
