@@ -1,40 +1,43 @@
 import time
-import copy
 import evaluate
 import main
+import copy
 
 from main import Moves
 
+tree_size = 0
+
 def minimax(allowed_time: int, depth: int, board: main.Board):
-    #define for which side minimax should run
+    global tree_size
+
+    tree_size = 0
+
+    board.copy_move()
+
     maximize = board.side
     best_value = -float("inf") if maximize else float("inf")
     
-    #init time for time_management
     timer = time.time()
 
-    #start generating the first moves
     moves = Moves()
     main.generate_move(moves, board)
     
-    #if lenth is zero the game is over or something went wrong
     if len(moves.moves) == 0:
         return 0
 
-    print(moves.moves)
-    boardcopy = copy.deepcopy(board)
     for move in moves:
-        #return best move after the allowed time is passed
         #if time.time() - timer > allowed_time:
-        # return 0
+        #    return moves.moves[1]    
 
-        board.copy_move()
-
+        board_copy = copy.deepcopy(board)
+        
         if not main.make_move(move, board):
+            print("ILLEGAL")
             continue
 
-        value = alpha_beta(depth, not maximize, board)
-        board = copy.deepcopy(boardcopy)
+        value = alpha_beta(depth - 1, not maximize, board)
+
+        board = copy.deepcopy(board_copy)
 
         if maximize and value >= best_value:
             best_value = value
@@ -42,72 +45,70 @@ def minimax(allowed_time: int, depth: int, board: main.Board):
         elif not maximize and value <= best_value:
             best_value = value
             best_move = move
-    return best_move
+    
+    print(tree_size)
+    return moves.moves[0]
 
 
 def alpha_beta(depth: int, maximize: bool, board):
-    #look if the alpha_beta function should optimize for white or black,
-    #then initialize with the corresponding initial values of -inf and inf for alpha and beta
     if maximize:
-        val1 = alpha_beta_max(-float("inf"), float("inf"), depth, board)
-        return val1
+        return alpha_beta_max(-float("inf"), float("inf"), depth, board)
     else:
-        val2 = alpha_beta_min(-float("inf"), float("inf"), depth, board)
-        return val2
+        return alpha_beta_min(-float("inf"), float("inf"), depth, board)
 
 
 def alpha_beta_max(alpha, beta, depth, board):
-    #check if depth is 0, if yes evaluate and return the current board
-    if depth == 0:
+    global tree_size
 
-        return evaluate.evaluate(board, board.side)
-        #return evaluate(board)
+    if depth == 0:
+        tree_size += 1
+        return 0 #evaluate.evaluate(board, board.side)
 
     moves = Moves()
     main.generate_move(moves, board)
 
     for move in moves:
 
-        #copy move, make it and then pass it into min
-        board.copy_move()
+        board_copy = copy.deepcopy(board)
 
         if not main.make_move(move, board):
             continue
 
         value = alpha_beta_min(alpha, beta, depth - 1, board)
 
-        board.undo_move()
+        board = copy.deepcopy(board_copy)
 
-    if value >= beta:
-        return beta
-    elif value > alpha:
-        alpha = value
+        if value >= beta:
+            return beta
+        elif value > alpha:
+            alpha = value
     return alpha
 
 
 def alpha_beta_min(alpha, beta, depth, board):
-    #check if depth is 0, if yes evaluate and return the current board
+    global tree_size
+
     if depth == 0:
-        #return evaluate(board)
-        return evaluate.evaluate(board, board.side)
+        tree_size += 1
+        return 0 #evaluate.evaluate(board, board.side)
+    
     moves = Moves()
     main.generate_move(moves, board)
 
     for move in moves:
-        #copy move, make it and then pass it into max
 
-        board.copy_move()
+        board_copy = copy.deepcopy(board)
 
         if not main.make_move(move, board):
+            print("ILLEGAL MOVE")
             continue
 
-
-
         value = alpha_beta_max(alpha, beta, depth - 1, board)
-        board.undo_move()
 
-    if value <= alpha:
-        return alpha
-    elif value < beta:
-        beta = value
+        board = copy.deepcopy(board_copy)
+
+        if value <= alpha:
+            return alpha
+        elif value < beta:
+            beta = value
     return beta
