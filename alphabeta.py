@@ -1,5 +1,4 @@
 import time
-import copy
 import evaluate
 import main
 
@@ -21,30 +20,31 @@ def minimax(allowed_time: int, depth: int, board: main.Board):
 
     #start generating the first moves
     moves = Moves()
-    moves.count = 0
     main.generate_move(moves, board)
     
     #if lenth is zero the game is over or something went wrong
     if len(moves.moves) == 0:
         return 0
 
-    boardcopy = copy.deepcopy(board)
     for move in moves:
         tree_size += 1
-        main.print_board(board)
-        inp = input("")
         #return best move after the allowed time is passed
-        if time.time() - timer > allowed_time:
-            return best_move
-
+        #if time.time() - timer > allowed_time:
+        #    return moves.moves[1]
+        
         board.copy_move()
-
+        
         if not main.make_move(move, board):
+            print("ILLEGAL")
             continue
 
-        value = alpha_beta(depth - 1, not maximize, board)
-        board = copy.deepcopy(boardcopy)
+        print("PRINT BOARD IN MAIN")
+        main.print_board(board)
+        inp = input(" ")
 
+        value = alpha_beta(depth - 1, not maximize, board)
+
+        print("undoing move")
         board.undo_move()
 
         if maximize and value >= best_value:
@@ -54,7 +54,7 @@ def minimax(allowed_time: int, depth: int, board: main.Board):
             best_value = value
             best_move = move
     print(tree_size)
-    return best_move
+    return moves.moves[1]
 
 
 def alpha_beta(depth: int, maximize: bool, board):
@@ -70,7 +70,7 @@ def alpha_beta_max(alpha, beta, depth, board):
     global tree_size
     #check if depth is 0, if yes evaluate and return the current board
     if depth == 0:
-        return evaluate.evaluate(board, board.side)
+        return 0 #evaluate.evaluate(board, board.side)
 
     moves = Moves()
     main.generate_move(moves, board)
@@ -84,16 +84,21 @@ def alpha_beta_max(alpha, beta, depth, board):
             print("ILLEGAL MOVE")
             continue
 
-        print("MAX CALLED")
-        print("Depth: " + str(depth))
+        print("PRINT BOARD IN max")
         main.print_board(board)
-        inp = input("")
+        inp = input(" ")
+
+        #print("MAX CALLED")
+        #print("Depth: " + str(depth))
+        #main.print_board(board)
+        #inp = input("")
 
         value = alpha_beta_min(alpha, beta, depth - 1, board)
 
         board.undo_move()
 
         if value >= beta:
+            print("VALUE WAS BIGGER THAN BETA")
             return beta
         elif value > alpha:
             alpha = value
@@ -105,7 +110,7 @@ def alpha_beta_min(alpha, beta, depth, board):
     #check if depth is 0, if yes evaluate and return the current board
     if depth == 0:
         #return evaluate(board)
-        return evaluate.evaluate(board, board.side)
+        return 0 #evaluate.evaluate(board, board.side)
     
     moves = Moves()
     main.generate_move(moves, board)
@@ -118,10 +123,15 @@ def alpha_beta_min(alpha, beta, depth, board):
         if not main.make_move(move, board):
             print("ILLEGAL MOVE")
             continue
-        print("MIN CALLED")
-        print("Depth: " + str(depth))
+
+        print("PRINT BOARD IN min")
         main.print_board(board)
-        inp = input("")
+        inp = input(" ")
+
+        #print("MIN CALLED")
+        #print("Depth: " + str(depth))
+        #main.print_board(board)
+        #inp = input("")
 
         value = alpha_beta_max(alpha, beta, depth - 1, board)
         board.undo_move()

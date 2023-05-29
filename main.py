@@ -4,10 +4,8 @@ Trying out some chess engine stuff
 
 from random import randrange
 import time
-import copy
-import alphabeta
-import evaluate
 
+import alphabeta
 
 #defining the piece integer representation
 e, P, N, B, R, Q, K, p, n, b, r, q, k, o = range(14)
@@ -87,13 +85,6 @@ class Board:
         ]
 
         self.king_position = [116, 4]
-
-        self.pawn_position = [[96,97,98,99,100,101,102,103],[16,17,18,19,20,21,22,23]]
-        self.night_position = [[square_representation.index('b1'), square_representation.index('g1')], [square_representation.index('b8'), square_representation.index('g8')]]
-        self.bishop_position = [[square_representation.index('c1'), square_representation.index('f1')], [square_representation.index('c8'), square_representation.index('f8')]]
-        self.rook_position = [[square_representation.index('a1'), square_representation.index('h1')], [square_representation.index('a8'), square_representation.index('h8')]]
-        self.queen_position = [[square_representation.index('d1')],[square_representation.index('d8')]]
-
         self.side = white
         self.can_castle = 0
         self.countercheck = 0
@@ -101,23 +92,20 @@ class Board:
         #define board state copy variable
         self.board_copy = [0] * 128
         self.king_position_copy = [2]
-        self.pawn_position_copy = [[],[]]
-        self.night_position_copy = [[],[]]
-        self.bishop_position_copy =[[],[]]
-        self.rook_position_copy = [[],[]]
-        self.queen_position_copy = [[],[]]
         self.side_copy = 0
         self.can_castle_copy = 0
 
     def copy_move(self):
+        #define board state copy variable
+        self.board_copy = [0] * 128
+        self.king_position_copy = [2]
+        self.side_copy = 0
+        self.can_castle_copy = 0
+
         #copy board state
         self.board_copy = self.board.copy()
         self.king_position_copy = self.king_position.copy()
-        self.pawn_position_copy = copy.deepcopy(self.pawn_position)
-        self.night_position_copy = copy.deepcopy(self.night_position)
-        self.bishop_position_copy = copy.deepcopy(self.bishop_position)
-        self.rook_position_copy = copy.deepcopy(self.rook_position)
-        self.queen_position_copy = copy.deepcopy(self.queen_position)
+        print(self.side, self.side_copy)
         self.side_copy = self.side
         self.can_castle_copy = self.can_castle
 
@@ -126,26 +114,11 @@ class Board:
         #undo board state
         self.board = self.board_copy.copy()
         self.king_position = self.king_position_copy.copy()
-        self.pawn_position = copy.deepcopy(self.pawn_position_copy)
-        self.night_position = copy.deepcopy(self.night_position_copy)
-        self.bishop_position = copy.deepcopy(self.bishop_position_copy)
-        self.rook_position = copy.deepcopy(self.rook_position_copy)
-        self.queen_position = copy.deepcopy(self.queen_position_copy)
-        
-        
+        print(self.side, self.side_copy)
         self.side = self.side_copy
         self.can_castle = self.can_castle_copy
+        print(self.side)
 
-        #reset copy variables
-        self.board_copy = [0] * 128
-        self.king_position_copy = [2]
-        self.pawn_position_copy = [[],[]]
-        self.night_position_copy = [[],[]]
-        self.bishop_position_copy =[[],[]]
-        self.rook_position_copy = [[],[]]
-        self.queen_position_copy = [[],[]]
-        self.side_copy = 0
-        self.can_castle_copy = 0
 
 
 # define movement information with bits
@@ -158,7 +131,6 @@ def set_move(current, target, promotion_piece, capture, double_pawn, castling):
         | (double_pawn << 19)
         | (castling << 20)
     )
-
 
 
 # extract the information
@@ -186,30 +158,26 @@ def get_move_castling(move):
     return (move >> 20) & 0x1
 
 
-# move list
+#move list
 class Moves:
     def __init__(self):
         self.moves = []
         self.count = 0
 
+    
     def add_move(self, move):
-        # add move to the list
+        #add move to the list
         self.moves.append(move)
 
-        # increase move counter
+        #increase move counter
         self.count += 1
+
 
     def __getitem__(self, index):
         return self.moves[index]
 
 
 def clear_board(board):
-    board.pawn_position = [[], []]
-    board.night_position = [[], []]
-    board.bishop_position = [[], []]
-    board.rook_position = [[], []]
-    board.queen_position = [[], []]
-
     # loop over column
     for rank in range(8):
         # loop over row
@@ -219,7 +187,6 @@ def clear_board(board):
             if not position & 0x88:
                 # clears the board
                 board.board[position] = e
-
 
 def print_board(board):
     # loop over column
@@ -269,6 +236,7 @@ def is_position_attacked(position, board, side):
             if not ((position + move) & 0x88) and board.board[position + move] == k:
                 return True
 
+
     # attacked by Bishop and Queen
     for move in bishop_movement:
         # creates new temp position
@@ -315,7 +283,6 @@ def is_position_attacked(position, board, side):
             new_position += move
     return 0
 
-
 def print_attack(board):
     # loop over column
     for rank in range(8):
@@ -352,18 +319,15 @@ def load_fen(fen, board):
             # check if the piece is on the field
             if not position & 0x88:
                 if (fen[fen_position] > "a" and fen[fen_position] < "z") or (
-                    fen[fen_position] > "A" and fen[fen_position] < "Z"
-                ):
-                    # set king square
-                    if fen[fen_position] == "K":
-                        board.king_position[white] = position
+                    fen[fen_position] > "A" and fen[fen_position] < "Z"):
 
-                    elif fen[fen_position] == "k":
+                    #set king square
+                    if (fen[fen_position] == 'K'):
+                        board.king_position[white] = position
+                
+                    elif (fen[fen_position] == 'k'):
                         board.king_position[black] = position
-                    else:
-                        evaluate.get_piece_positions_from_letter(
-                            fen[fen_position], board
-                        ).append(position)
+
 
                     # set current board position to fen piece
                     board.board[position] = char_pieces[fen[fen_position]]
@@ -429,10 +393,8 @@ def generate_move(move, board):
                             if (position > 95 and position < 104) and not board.board[
                                 position - 32
                             ]:
-                                # move 2 squares ahead
-                                move.add_move(
-                                    set_move(position, position - 32, 0, 0, 1, 0)
-                                )
+                                #move 2 squares ahead
+                                move.add_move(set_move(position, position - 32, 0, 0, 1, 0))
 
                     # pawn capture moves
                     for movement in bishop_movement:
@@ -445,25 +407,15 @@ def generate_move(move, board):
                             # look for promotion capture
                             if position > 15 and position < 24:
                                 pass
-                                move.add_move(
-                                    set_move(position, position - movement, Q, 1, 0, 0)
-                                )
-                                move.add_move(
-                                    set_move(position, position - movement, R, 1, 0, 0)
-                                )
-                                move.add_move(
-                                    set_move(position, position - movement, B, 1, 0, 0)
-                                )
-                                move.add_move(
-                                    set_move(position, position - movement, N, 1, 0, 0)
-                                )
+                                move.add_move(set_move(position, position - movement, Q, 1, 0, 0))
+                                move.add_move(set_move(position, position - movement, R, 1, 0, 0))
+                                move.add_move(set_move(position, position - movement, B, 1, 0, 0))
+                                move.add_move(set_move(position, position - movement, N, 1, 0, 0))
 
                             # casual capture
                             else:
                                 pass
-                                move.add_move(
-                                    set_move(position, position - movement, 0, 1, 0, 0)
-                                )
+                                move.add_move(set_move(position, position - movement, 0, 1, 0, 0))
 
                 # white king castling
                 if board.board[position] == K:
@@ -524,9 +476,7 @@ def generate_move(move, board):
                                 position + 32
                             ]:
                                 pass
-                                move.add_move(
-                                    set_move(position, position + 32, 0, 0, 1, 0)
-                                )
+                                move.add_move(set_move(position, position + 32, 0, 0, 1, 0))
 
                     for movement in bishop_movement:
                         if (
@@ -537,24 +487,14 @@ def generate_move(move, board):
                         ):
                             if position > 95 and position < 104:
                                 pass
-                                move.add_move(
-                                    set_move(position, position + movement, q, 1, 0, 0)
-                                )
-                                move.add_move(
-                                    set_move(position, position + movement, r, 1, 0, 0)
-                                )
-                                move.add_move(
-                                    set_move(position, position + movement, b, 1, 0, 0)
-                                )
-                                move.add_move(
-                                    set_move(position, position + movement, n, 1, 0, 0)
-                                )
+                                move.add_move(set_move(position, position + movement, q, 1, 0, 0))
+                                move.add_move(set_move(position, position + movement, r, 1, 0, 0))
+                                move.add_move(set_move(position, position + movement, b, 1, 0, 0))
+                                move.add_move(set_move(position, position + movement, n, 1, 0, 0))
 
                             else:
                                 pass
-                                move.add_move(
-                                    set_move(position, position + movement, 0, 1, 0, 0)
-                                )
+                                move.add_move(set_move(position, position + movement, 0, 1, 0, 0))
 
                 # black king castling, doucmentation in white king moves
                 if board.board[position] == k:
@@ -592,11 +532,7 @@ def generate_move(move, board):
                             move.add_move(set_move(4, 2, 0, 0, 0, 1))
 
             # knight moves and captures
-            if (
-                (board.board[position] == N)
-                if not board.side
-                else (board.board[position] == n)
-            ):
+            if (board.board[position] == N) if not board.side else (board.board[position] == n):
                 # loop over knight moves
                 for movement in knight_movement:
                     # check if targeted square is on board
@@ -613,22 +549,14 @@ def generate_move(move, board):
                             # check if it captured something or hits empty square
                             if target:
                                 pass
-                                move.add_move(
-                                    set_move(position, position + movement, 0, 1, 0, 0)
-                                )
+                                move.add_move(set_move(position, position + movement, 0, 1, 0, 0))
 
                             else:
                                 pass
-                                move.add_move(
-                                    set_move(position, position + movement, 0, 0, 0, 0)
-                                )
+                                move.add_move(set_move(position, position + movement, 0, 0, 0, 0))
 
             # king standart moves and captures comments same as in knight moves
-            if (
-                (board.board[position] == K)
-                if not board.side
-                else (board.board[position] == k)
-            ):
+            if (board.board[position] == K) if not board.side else (board.board[position] == k):
                 for movement in king_movement:
                     if not (position + movement) & 0x88:
                         target = board.board[position + movement]
@@ -640,15 +568,11 @@ def generate_move(move, board):
                         ):
                             if target:
                                 pass
-                                move.add_move(
-                                    set_move(position, position + movement, 0, 1, 0, 0)
-                                )
+                                move.add_move(set_move(position, position + movement, 0, 1, 0, 0))
 
                             else:
                                 pass
-                                move.add_move(
-                                    set_move(position, position + movement, 0, 0, 0, 0)
-                                )
+                                move.add_move(set_move(position, position + movement, 0, 0, 0, 0))
 
             # bishop and queen movement
             if (
@@ -680,20 +604,12 @@ def generate_move(move, board):
                             if not board.side
                             else (piece >= 1 and piece <= 6)
                         ):
-                            move.add_move(
-                                set_move(
-                                    position, position + current_movement, 0, 1, 0, 0
-                                )
-                            )
+                            move.add_move(set_move(position, position + current_movement, 0, 1, 0, 0))
                             break
 
                         # if square empty
                         if not piece:
-                            move.add_move(
-                                set_move(
-                                    position, position + current_movement, 0, 0, 0, 0
-                                )
-                            )
+                            move.add_move(set_move(position, position + current_movement, 0, 0, 0, 0))
                             pass
 
                         current_movement += movement
@@ -724,168 +640,140 @@ def generate_move(move, board):
                             if not board.side
                             else (piece >= 1 and piece <= 6)
                         ):
-                            move.add_move(
-                                set_move(
-                                    position, position + current_movement, 0, 1, 0, 0
-                                )
-                            )
+                            move.add_move(set_move(position, position + current_movement, 0, 1, 0, 0))
                             break
 
                         # if square empty
                         if not piece:
-                            move.add_move(
-                                set_move(
-                                    position, position + current_movement, 0, 0, 0, 0
-                                )
-                            )
+                            move.add_move(set_move(position, position + current_movement, 0, 0, 0, 0))
                             pass
-
+                        
                         current_movement += movement
                         target += movement
 
 
-# make move
-def make_move(move, board: Board):
+#make move
+def make_move(move, board):
     board.copy_move()
 
-    # get current and target position
+    #get current and target position
     position = get_move_source(move)
     target = get_move_target(move)
     promoted_piece = get_move_piece(move)
     castling = get_move_castling(move)
 
-    # if target is king
+    #if target is king
     if board.board[target] == K or board.board[target] == k:
         return 0
 
-    # update king position
+    #make the move
+    board.board[target] = board.board[position]
+    board.board[position] = e
+
+    #promote pawn
+    if promoted_piece:
+        board.board[target] = promoted_piece
+
+    #update king position
     if board.board[position] == K or board.board[position] == k:
         board.king_position[board.side] = target
-    if board.board[position] != K and board.board[position] != k:
-        if board.board[position] == e:
-            return 0  # the second check. first was in line 730
-        
-        piece_positions = evaluate.get_piece_positions_from_letter(
-            char_ascii[board.board[position]], board
-        )
 
-        piece_positions.remove(position)
-
-        # promote pawn
-        if promoted_piece:
-            board.board[target] = promoted_piece
-            promotions_positions = evaluate.get_piece_positions_from_letter(
-                char_ascii[board.board[target]], board
-            )
-            promotions_positions.append(target)
-        elif not promoted_piece:  # regular move
-            piece_positions.append(target)
-
-    # castling moves
+    #castling moves
     if castling:
         match target:
             case 118:
-                help_positions = evaluate.get_piece_positions_from_letter("R", board)
-                help_positions.append(117)
-                help_positions.remove(119)
                 board.board[117] = board.board[119]
                 board.board[119] = e
             case 6:
-                help_positions = evaluate.get_piece_positions_from_letter("r", board)
-                help_positions.append(5)
-                help_positions.remove(7)
                 board.board[5] = board.board[7]
                 board.board[7] = e
             case 114:
-                help_positions = evaluate.get_piece_positions_from_letter("R", board)
-                help_positions.append(115)
-                help_positions.remove(112)
                 board.board[115] = board.board[112]
                 board.board[112] = e
             case 2:
-                help_positions = evaluate.get_piece_positions_from_letter("r", board)
-                help_positions.append(3)
-                help_positions.remove(0)
                 board.board[3] = board.board[0]
                 board.board[0] = e
 
-    # change castling rights
+    #change castling rights
     board.can_castle &= castling_rights[position]
     board.can_castle &= castling_rights[target]
 
-    # change side
+    #change side
     board.side ^= 1
 
-    # print("Moving " + square_representation[position] + " to " + square_representation[target])
+    #print("Moving " + square_representation[position] + " to " + square_representation[target])
 
-    # make the move
-    board.board[target] = board.board[position]
-    board.board[position] = e
-    # is king attacked
-    if is_position_attacked(board.king_position[board.side ^ 1], board, board.side):
-        # undo move
+    #is king attacked
+    if is_position_attacked(board.king_position[board.side^1], board, board.side):
+        #undo move 
         board.undo_move()
         return 0
 
     else:
-        # legal move
+        #legal move
 
         return 1
 
 
-# define tree length
+#define tree length
 tree_size = 0
 
-
 def get_time_ms():
-    return time.process_time()
-
+    return time.process_time() 
 
 def chess(depth, board):
     global tree_size
-    # break when depth = 0
+    #break when depth = 0
+    
     if not depth:
         tree_size += 1
         return
 
-    # generate move
+    #generate move
     moves = Moves()
-
-    moves.count = 0
-
     generate_move(moves, board)
+
 
     for move in moves:
         board.copy_move()
 
-        # only legal moves
+        #only legal moves
         if not make_move(move, board):
             continue
 
-        # recursive until depth = 0
-        chess(depth - 1, board)
+        inp = input(" ")
 
+        print("PRINT BOARD IN CHESS")
+        print_board(board)
+
+        #recursive until depth = 0
+        chess(depth - 1, board)
+        
         board.undo_move()
 
-
+    
 def chess_perft(depth, board):
-    # generate move
+    #generate move
     moves = Moves()
-    # moves.count = 0
     generate_move(moves, board)
-    print(moves)
+    #print("PRINT BOARD IN PERFT")
+    #print_board(board)
+
 
     for move in moves:
+        print("LOADING NEXT MAIN MOVE")
         board.copy_move()
 
-        # only legal moves
+        #only legal moves
         if not make_move(move, board):
+            print("ILLEGAL MOVE")
             continue
 
-        # recursive until depth = 0
+        #recursive until depth = 0
         chess(depth - 1, board)
-
+        
         board.undo_move()
+        board.side ^ 1
 
     return moves[randrange(0, moves.count)]
 
@@ -906,66 +794,54 @@ def check_mate(board):
         board.undo_move()
     return checklist == []
 
-
-# loop over game
+#loop over game
 def loop_game(depth, allowed_time, board):
     checkmate = False
     remi = False
     boards = []
     while not checkmate:
-        # get and make best move
-        boardcopy = copy.deepcopy(board)
-        best_move = alphabeta.minimax(allowed_time, depth, board)
-        board = copy.deepcopy(boardcopy)
 
-        # best_move = chess_perft(depth, board)
+        #get and make best move
+        best_move = alphabeta.minimax(allowed_time, depth, board)
+        #best_move = chess_perft(depth, board)
         make_move(best_move, board)
 
-        # print best move and board
-        print(
-            "Best move: "
-            + char_ascii[board.board[get_move_target(best_move)]]
-            + " on "
-            + square_representation[get_move_source(best_move)]
-            + " to "
-            + square_representation[get_move_target(best_move)]
-        )
+        #print best move and board
+        print(tree_size)
+        print("Best move: " + char_ascii[board.board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
         print_board(board)
         inp = input(" ")
-        boards.append(board.board)
-        for pastboard in boards:
-            if boards.count(pastboard) >= 3:
-                remi = True
-                checkmate = True
-        if not checkmate:
-            checkmate = check_mate(board)
-    if remi:
-        print("Remi")
-    else:
-        print("Checkmate")
+    #
+    #    boards.append(board.board)
+    #    for pastboard in boards:
+    #        if boards.count(pastboard) >= 3:
+    #            Remi = True
+    #            checkmate = True
+    #    if checkmate == False:
+    #        checkmate = check_mate(board)
+# 
+    #if Remi == True:
+    #    print("Remi")
+    #else:
+    #    print("Checkmate")
 
 
 def main():
-    starttime = get_time_ms()
+
     board = Board()
 
     allowed_time = 2
     load_fen(start_position, board)
+    print(board.side^1)
     print_stats(board)
     print_board(board)
-    # testlist =[]
-    # print("\n")
+    #testlist =[]
+    #print("\n")
 
-    loop_game(3, allowed_time, board)
+    loop_game(2, allowed_time, board)
 
     print(tree_size)
-    # make the moves with depth 1
-
-    # safe Benchmark
-    with open("benchmark.txt", "w") as my_file:
-        my_file.write("With FEN: " + start_position + "\n")
-        my_file.write("Runtime = " + str(get_time_ms() - starttime))
-
-
+    #make the moves with depth 1
+    
 if __name__ == "__main__":
     main()
