@@ -1,9 +1,7 @@
-"""
-Trying out some chess engine stuff
-"""
 
 from random import randrange
 import time
+import copy
 
 import alphabeta
 
@@ -105,7 +103,6 @@ class Board:
         #copy board state
         self.board_copy = self.board.copy()
         self.king_position_copy = self.king_position.copy()
-        print(self.side, self.side_copy)
         self.side_copy = self.side
         self.can_castle_copy = self.can_castle
 
@@ -114,10 +111,8 @@ class Board:
         #undo board state
         self.board = self.board_copy.copy()
         self.king_position = self.king_position_copy.copy()
-        print(self.side, self.side_copy)
         self.side = self.side_copy
         self.can_castle = self.can_castle_copy
-        print(self.side)
 
 
 
@@ -654,7 +649,7 @@ def generate_move(move, board):
 
 #make move
 def make_move(move, board):
-    board.copy_move()
+    board_copy = copy.deepcopy(board)
 
     #get current and target position
     position = get_move_source(move)
@@ -706,7 +701,7 @@ def make_move(move, board):
     #is king attacked
     if is_position_attacked(board.king_position[board.side^1], board, board.side):
         #undo move 
-        board.undo_move()
+        board = copy.deepcopy(board_copy)
         return 0
 
     else:
@@ -715,67 +710,8 @@ def make_move(move, board):
         return 1
 
 
-#define tree length
-tree_size = 0
-
 def get_time_ms():
     return time.process_time() 
-
-def chess(depth, board):
-    global tree_size
-    #break when depth = 0
-    
-    if not depth:
-        tree_size += 1
-        return
-
-    #generate move
-    moves = Moves()
-    generate_move(moves, board)
-
-
-    for move in moves:
-        board.copy_move()
-
-        #only legal moves
-        if not make_move(move, board):
-            continue
-
-        inp = input(" ")
-
-        print("PRINT BOARD IN CHESS")
-        print_board(board)
-
-        #recursive until depth = 0
-        chess(depth - 1, board)
-        
-        board.undo_move()
-
-    
-def chess_perft(depth, board):
-    #generate move
-    moves = Moves()
-    generate_move(moves, board)
-    #print("PRINT BOARD IN PERFT")
-    #print_board(board)
-
-
-    for move in moves:
-        print("LOADING NEXT MAIN MOVE")
-        board.copy_move()
-
-        #only legal moves
-        if not make_move(move, board):
-            print("ILLEGAL MOVE")
-            continue
-
-        #recursive until depth = 0
-        chess(depth - 1, board)
-        
-        board.undo_move()
-        board.side ^ 1
-
-    return moves[randrange(0, moves.count)]
 
 
 def check_mate(board):
@@ -785,14 +721,15 @@ def check_mate(board):
     generate_move(moves, board)
     checklist = []
     for move in moves:
-        board.copy_move()
+        board_copy = copy.deepcopy(board)
 
         if not make_move(move, board):
             continue
         checklist.append(move)
 
-        board.undo_move()
+        board = copy.deepcopy(board_copy)
     return checklist == []
+
 
 #loop over game
 def loop_game(depth, allowed_time, board):
@@ -800,30 +737,29 @@ def loop_game(depth, allowed_time, board):
     remi = False
     boards = []
     while not checkmate:
-
-        #get and make best move
+        board_copy = copy.deepcopy(board)
         best_move = alphabeta.minimax(allowed_time, depth, board)
-        #best_move = chess_perft(depth, board)
+        board = copy.deepcopy(board_copy)
+        
         make_move(best_move, board)
 
         #print best move and board
-        print(tree_size)
         print("Best move: " + char_ascii[board.board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
         print_board(board)
         inp = input(" ")
-    #
-    #    boards.append(board.board)
-    #    for pastboard in boards:
-    #        if boards.count(pastboard) >= 3:
-    #            Remi = True
-    #            checkmate = True
-    #    if checkmate == False:
-    #        checkmate = check_mate(board)
-# 
-    #if Remi == True:
-    #    print("Remi")
-    #else:
-    #    print("Checkmate")
+    
+        boards.append(board.board)
+        for pastboard in boards:
+            if boards.count(pastboard) >= 3:
+                remi = True
+                checkmate = True
+        if checkmate == False:
+            checkmate = check_mate(board)
+ 
+    if remi == True:
+        print("Remi")
+    else:
+        print("Checkmate")
 
 
 def main():
@@ -835,13 +771,11 @@ def main():
     print(board.side^1)
     print_stats(board)
     print_board(board)
-    #testlist =[]
-    #print("\n")
 
-    loop_game(2, allowed_time, board)
+    loop_game(3, allowed_time, board)
 
     print(tree_size)
-    #make the moves with depth 1
+
     
 if __name__ == "__main__":
     main()
