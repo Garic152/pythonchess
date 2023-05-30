@@ -2,7 +2,7 @@
 from random import randrange
 import time
 import copy
-import evaluate
+
 import alphabeta
 
 #defining the piece integer representation
