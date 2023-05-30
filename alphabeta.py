@@ -24,19 +24,23 @@ def minimax(allowed_time: int, depth: int, board: main.Board):
     
     if len(moves.moves) == 0:
         return 0
+    main.print_board(board)
 
     for move in moves:
         #if time.time() - timer > allowed_time:
         #    return moves.moves[1]    
 
         board_copy = copy.deepcopy(board)
-        
         if not main.make_move(move, board):
-            print("ILLEGAL")
-            continue
+            #print("ILLEGAL")
+            continue        
+        print("board in for loop after main.make_move() and before alpha betta")
+        main.print_board(board)
 
         value = alpha_beta(depth - 1, not maximize, board)
 
+        print("board in for loop after alpha_beta")
+        main.print_board(board)
         board = copy.deepcopy(board_copy)
 
         if maximize and value >= best_value:
@@ -47,7 +51,7 @@ def minimax(allowed_time: int, depth: int, board: main.Board):
             best_move = move
     
     print(tree_size)
-    return moves.moves[0]
+    return best_move
 
 
 def alpha_beta(depth: int, maximize: bool, board):
@@ -62,7 +66,9 @@ def alpha_beta_max(alpha, beta, depth, board):
 
     if depth == 0:
         tree_size += 1
-        return 0 #evaluate.evaluate(board, board.side)
+        test1 = evaluate.evaluate(board, board.side)
+        #print(f"test1: max: {test1}")
+        return test1
 
     moves = Moves()
     main.generate_move(moves, board)
@@ -90,7 +96,9 @@ def alpha_beta_min(alpha, beta, depth, board):
 
     if depth == 0:
         tree_size += 1
-        return 0 #evaluate.evaluate(board, board.side)
+        test2 = evaluate.evaluate(board, board.side^1)
+        #print(f"test1: min: {test2}")
+        return test2
     
     moves = Moves()
     main.generate_move(moves, board)
@@ -100,7 +108,7 @@ def alpha_beta_min(alpha, beta, depth, board):
         board_copy = copy.deepcopy(board)
 
         if not main.make_move(move, board):
-            print("ILLEGAL MOVE")
+            #print("ILLEGAL MOVE")
             continue
 
         value = alpha_beta_max(alpha, beta, depth - 1, board)
