@@ -3,6 +3,8 @@ from random import randrange
 import time
 import copy
 
+
+import evaluate
 import alphabeta
 
 #defining the piece integer representation
@@ -742,8 +744,10 @@ def loop_game(depth, allowed_time, board):
         board_copy = copy.deepcopy(board)
         best_move = alphabeta.minimax(allowed_time, depth, board)
         board = copy.deepcopy(board_copy)
-        
+        print(f"eval {evaluate.evaluate(board,board.side)} for side: {board.side} before best move ")
         make_move(best_move, board)
+        print(f"eval {evaluate.evaluate(board,board.side^1)} for side: {board.side^1} after best move ")
+
         #print best move and board
         print("Best move: " + char_ascii[board.board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
         print_board(board)
@@ -769,15 +773,28 @@ def main():
 
     board = Board()
 
+    
     allowed_time = 2
     load_fen(start_position, board)
+    board.board = [
+    r, n, b, q, k, b, e, r, o, o, o, o, o, o, o, o,
+    p, p, p, p, p, p, p, p, o, o, o, o, o, o, o, o,
+    e, e, e, e, e, n, e, e, o, o, o, o, o, o, o, o,
+    e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    e, e, e, P, e, e, e, e, o, o, o, o, o, o, o, o,
+    e, e, e, e, e, N, e, e, o, o, o, o, o, o, o, o,
+    P, P, P, e, P, P, P, P, o, o, o, o, o, o, o, o,
+    R, N, B, Q, K, B, e, R, o, o, o, o, o, o, o, o
+]
+    load_fen(start_position, board)
+
     print(board.side^1)
     print_stats(board)
     print_board(board)
-
+    print("eval: ",evaluate.evaluate(board, white))
     loop_game(3, allowed_time, board)
 
-    print(tree_size)
+    #print(tree_size)
 
     
 if __name__ == "__main__":
