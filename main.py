@@ -3,6 +3,8 @@ from random import randrange
 import time
 import copy
 
+
+import evaluate
 import alphabeta
 
 #defining the piece integer representation
@@ -717,6 +719,7 @@ def get_time_ms():
 def check_mate(board):
     global tree_size
     moves = Moves()
+    board_copy_for_check_mate_function = copy.deepcopy(board)
     # moves.count = 0
     generate_move(moves, board)
     checklist = []
@@ -728,6 +731,7 @@ def check_mate(board):
         checklist.append(move)
 
         board = copy.deepcopy(board_copy)
+    board = copy.deepcopy(board_copy_for_check_mate_function)
     return checklist == []
 
 
@@ -740,14 +744,16 @@ def loop_game(depth, allowed_time, board):
         board_copy = copy.deepcopy(board)
         best_move = alphabeta.minimax(allowed_time, depth, board)
         board = copy.deepcopy(board_copy)
-        
+        print(f"eval {evaluate.evaluate(board,board.side)} for side: {board.side} before best move ")
         make_move(best_move, board)
+        print(f"eval {evaluate.evaluate(board,board.side^1)} for side: {board.side^1} after best move ")
 
         #print best move and board
         print("Best move: " + char_ascii[board.board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
         print_board(board)
         inp = input(" ")
-    
+
+        board_copy_after_one_move_before_second = copy.deepcopy(board)
         boards.append(board.board)
         for pastboard in boards:
             if boards.count(pastboard) >= 3:
@@ -755,7 +761,8 @@ def loop_game(depth, allowed_time, board):
                 checkmate = True
         if checkmate == False:
             checkmate = check_mate(board)
- 
+            board = copy.deepcopy(board_copy_after_one_move_before_second)
+        #
     if remi == True:
         print("Remi")
     else:
@@ -766,15 +773,28 @@ def main():
 
     board = Board()
 
+    
     allowed_time = 2
     load_fen(start_position, board)
+    board.board = [
+    r, n, b, q, k, b, e, r, o, o, o, o, o, o, o, o,
+    p, p, p, p, p, p, p, p, o, o, o, o, o, o, o, o,
+    e, e, e, e, e, n, e, e, o, o, o, o, o, o, o, o,
+    e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    e, e, e, P, e, e, e, e, o, o, o, o, o, o, o, o,
+    e, e, e, e, e, N, e, e, o, o, o, o, o, o, o, o,
+    P, P, P, e, P, P, P, P, o, o, o, o, o, o, o, o,
+    R, N, B, Q, K, B, e, R, o, o, o, o, o, o, o, o
+]
+    load_fen(start_position, board)
+
     print(board.side^1)
     print_stats(board)
     print_board(board)
-
+    print("eval: ",evaluate.evaluate(board, white))
     loop_game(3, allowed_time, board)
 
-    print(tree_size)
+    #print(tree_size)
 
     
 if __name__ == "__main__":
