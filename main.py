@@ -706,7 +706,7 @@ def make_move(move, board):
         #print("BEFORE UNDOING MOVE")
         #print_board(board)
 
-        board = copy.deepcopy(board_copy)
+        board = board_copy
 
         #print("AFTER UNDOING MOVE")
         #print_board(board)
@@ -734,8 +734,8 @@ def check_mate(board):
             continue
         checklist.append(move)
 
-        board = copy.deepcopy(board_copy)
-    board = copy.deepcopy(board_copy_for_check_mate_function)
+        board = board_copy
+    board = board_copy_for_check_mate_function
     return checklist == []
 
 
@@ -792,7 +792,7 @@ def main():
     print_stats(board)
     print_board(board)
     print("eval: ",evaluate.evaluate(board, white))
-    loop_game(3, allowed_time, board)
+    loop_game(4, allowed_time, board)
 
     #print(tree_size)
 

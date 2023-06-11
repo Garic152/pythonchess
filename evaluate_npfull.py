@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 white, black = range(2)
 
@@ -6,11 +7,6 @@ e, P, N, B, R, Q, K, p, n, b, r, q, k, o = range(14)
 
 #source with explanation for the scores
 #https://www.chessprogramming.org/Simplified_Evaluation_Function
-pawn_value = 100
-night_value = 320
-bishop_value = 330
-rook_value = 500
-queen_value = 900
 
 piece_values = np.array([0, 100, 320, 330, 500, 900, 20000, -100, -320, -330, -500, -900, -20000, 0])
 
@@ -144,16 +140,14 @@ e, P, N, B, R, Q, K, p, n, b, r, q, k, o = range(14)
 
 def consider_positions(board, side):
     perspective = 1 if side == white else -1
-    val = 0
 
-    for i in range(board_positions.shape[0]):
-        val += np.sum(board_positions[i][board == i + 1])
+    #timer = time.time()
+
+    val = np.sum(board_positions[board == np.arange(1, 14)[:, np.newaxis]])
+
+    #print(time.time() - timer)
 
     return val*perspective
-
-#                  e,   P,            N,            B,          R,          Q,          K, \n p, n, b, r, q, k, o = range(14)
-material_values = [0, pawn_value, night_value, bishop_value, rook_value, queen_value, 20000, 
-                     -pawn_value, -night_value, -bishop_value, -rook_value, -queen_value, -20000, 0,0,0] # we get sometimes figure on position 127 with value 15 that is why we have two extra zeros in the end
 
 def count_material(local_board, side):
     perspective = 1 if side == white else -1

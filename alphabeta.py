@@ -12,8 +12,6 @@ def minimax(allowed_time: int, depth: int, board: main.Board):
 
     tree_size = 0
 
-    board.copy_move()
-
     maximize = board.side^1
     best_value = -float("inf") if maximize else float("inf")
     
@@ -36,7 +34,7 @@ def minimax(allowed_time: int, depth: int, board: main.Board):
 
         main.print_board(board)
 
-        board = copy.deepcopy(board_copy)
+        board = board_copy
 
         if maximize and value >= best_value:
             best_value = value
@@ -76,7 +74,7 @@ def alpha_beta_max(alpha, beta, depth, board):
 
         value = alpha_beta_min(alpha, beta, depth - 1, board)
 
-        board = copy.deepcopy(board_copy)
+        board = board_copy
 
         if value >= beta:
             return beta
@@ -104,7 +102,7 @@ def alpha_beta_min(alpha, beta, depth, board):
 
         value = alpha_beta_max(alpha, beta, depth - 1, board)
 
-        board = copy.deepcopy(board_copy)
+        board = board_copy
 
         if value <= alpha:
             return alpha

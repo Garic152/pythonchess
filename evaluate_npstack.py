@@ -185,10 +185,8 @@ def evaluate(board, side):
     return count_material(local_board, side) + consider_positions(local_board, side)
 
 
-e, P, N, B, R, Q, K, p, n, b, r, q, k, o = range(14)
 # 0,1,2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13
-x = np.stack([      #e is not a piece => no table for e
-            early_game_pawn_white,
+x = np.stack([early_game_pawn_white,
             early_game_night_white,
             early_game_bishop_white,
             early_game_rook_white,
@@ -199,22 +197,17 @@ x = np.stack([      #e is not a piece => no table for e
             early_game_bishop_black,
             early_game_rook_black,
             early_game_queen_black,
-            early_game_king_black,]) #o is not a piece => no table for o
+            early_game_king_black]) #o is not a piece => no table for o
 
 
 
 def consider_positions(board, side):
     perspective = 1 if side == white else -1
-    val = 0
 
-    for i in range(x.shape[0]):
-        val += np.sum(x[i][board == i + 1])
+    val = np.sum(x[board == np.arange(1, 13)[:, np.newaxis]])
 
     return val*perspective
 
-#                  e,   P,            N,            B,          R,          Q,          K, \n p, n, b, r, q, k, o = range(14)
-material_values = [0, pawn_value, night_value, bishop_value, rook_value, queen_value, 20000, 
-                     -pawn_value, -night_value, -bishop_value, -rook_value, -queen_value, -20000, 0,0,0] # we get sometimes figure on position 127 with value 15 that is why we have two extra zeros in the end
 
 def count_material(local_board, side):
     perspective = 1 if side == white else -1
