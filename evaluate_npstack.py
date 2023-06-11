@@ -2,8 +2,6 @@ import numpy as np
 
 white, black = range(2)
 
-e, P, N, B, R, Q, K, p, n, b, r, q, k, o = range(14)
-
 #source with explanation for the scores
 #https://www.chessprogramming.org/Simplified_Evaluation_Function
 pawn_value = 100
@@ -145,17 +143,6 @@ eg_king_table = np.array([
         -53, -34, -21, -11, -28, -14, -24, -43,
 ])
 
-early_game_king_white_2 = np.array([
-    -30,-40,-40,-50,-50,-40,-40,-30,    1,2,3,4,5,6,7,8,
-    -30,-40,-40,-50,-50,-40,-40,-30,    1,2,3,4,5,6,7,8,
-    -30,-40,-40,-50,-50,-40,-40,-30,    1,2,3,4,5,6,7,8,
-    -30,-40,-40,-50,-50,-40,-40,-30,    1,2,3,4,5,6,7,8,
-    -20,-30,-30,-40,-40,-30,-30,-20,    1,2,3,4,5,6,7,8,
-    -10,-20,-20,-20,-20,-20,-20,-10,    1,2,3,4,5,6,7,8,
-     5, 5,  10, 10, 10, 10, 5, 5,    1,2,3,4,5,6,7,8,
-    -20,-10, 0,  0,  0, 0, -10,-20,    1,2,3,4,5,6,7,8
-])
-
 early_game_king_black = np.array([
      20,  30,  10,   0,   0,  10,  30,  20,      8, 7, 6, 5, 4, 3, 2, 1,
      20,  20,   0,   0,   0,   0,  20,  20,      8, 7, 6, 5, 4, 3, 2, 1,
@@ -167,17 +154,7 @@ early_game_king_black = np.array([
     -30, -40, -40, -50, -50, -40, -40, -30,      8, 7, 6, 5, 4, 3, 2, 1
 ])
 
-
-eg_king_table = [
-        -74, -35, -18, -18, -11, 15, 4, -17,
-        -12, 17, 14, 17, 17, 38, 23, 11,
-        10, 17, 23, 15, 20, 45, 44, 13,
-        -8, 22, 24, 75, 65, 33, 26, 3,
-        -18, -4, 21, 125, 135, 23, 9, -11,
-        -19, -3, 11, 21, 23, 16, 7, -9,
-        -27, -11, 4, 13, 14, 4, -5, -17,
-        -53, -34, -21, -11, -28, -14, -24, -43,
-]
+pieces = np.arange(1, 13)[:, np.newaxis]
 
 
 def evaluate(board, side):
@@ -204,7 +181,7 @@ x = np.stack([early_game_pawn_white,
 def consider_positions(board, side):
     perspective = 1 if side == white else -1
 
-    val = np.sum(x[board == np.arange(1, 13)[:, np.newaxis]])
+    val = np.sum(x[board == pieces])
 
     return val*perspective
 

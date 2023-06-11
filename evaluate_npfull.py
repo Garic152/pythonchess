@@ -3,8 +3,6 @@ import time
 
 white, black = range(2)
 
-e, P, N, B, R, Q, K, p, n, b, r, q, k, o = range(14)
-
 #source with explanation for the scores
 #https://www.chessprogramming.org/Simplified_Evaluation_Function
 
@@ -134,9 +132,6 @@ def evaluate(board, side):
     local_board = np.array(board.board)
     return count_material(local_board, side) + consider_positions(local_board, side)
 
-
-e, P, N, B, R, Q, K, p, n, b, r, q, k, o = range(14)
-# 0,1,2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13
 
 def consider_positions(board, side):
     perspective = 1 if side == white else -1

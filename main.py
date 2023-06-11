@@ -662,6 +662,10 @@ def make_move(move, board):
     #if target is king
     if board.board[target] == K or board.board[target] == k:
         return 0
+    
+    #update king position
+    if board.board[position] == K or board.board[position] == k:
+        board.king_position[board.side] = target
 
     #make the move
     board.board[target] = board.board[position]
@@ -670,10 +674,6 @@ def make_move(move, board):
     #promote pawn
     if promoted_piece:
         board.board[target] = promoted_piece
-
-    #update king position
-    if board.board[target] == K or board.board[target] == k:
-        board.king_position[board.side] = target
 
     #castling moves
     if castling:
@@ -792,7 +792,7 @@ def main():
     print_stats(board)
     print_board(board)
     print("eval: ",evaluate.evaluate(board, white))
-    loop_game(4, allowed_time, board)
+    loop_game(3, allowed_time, board)
 
     #print(tree_size)
 

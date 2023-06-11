@@ -2,6 +2,7 @@ import time
 import evaluate_np as evaluate
 import main
 import copy
+import pickle
 
 from main import Moves
 
@@ -22,11 +23,11 @@ def minimax(allowed_time: int, depth: int, board: main.Board):
     
     if len(moves.moves) == 0:
         return 0
+    
     for move in moves:
-        #if time.time() - timer > allowed_time:
-        #    return moves.moves[1]    
 
-        board_copy = copy.deepcopy(board)
+        board_copy = pickle.dumps(board)
+
         if not main.make_move(move, board):
             continue
 
@@ -34,7 +35,7 @@ def minimax(allowed_time: int, depth: int, board: main.Board):
 
         main.print_board(board)
 
-        board = board_copy
+        board = pickle.loads(board_copy)
 
         if maximize and value >= best_value:
             best_value = value
@@ -60,21 +61,20 @@ def alpha_beta_max(alpha, beta, depth, board):
 
     if depth == 0:
         tree_size += 1
-        test1 = evaluate.evaluate(board, board.side)
-        return test1
+        return evaluate.evaluate(board, board.side)
 
     moves = Moves()
     main.generate_move(moves, board)
 
     for move in moves:
-        board_copy = copy.deepcopy(board)
+        board_copy = pickle.dumps(board)
 
         if not main.make_move(move, board): 
             continue
 
         value = alpha_beta_min(alpha, beta, depth - 1, board)
 
-        board = board_copy
+        board = pickle.loads(board_copy)
 
         if value >= beta:
             return beta
@@ -88,21 +88,20 @@ def alpha_beta_min(alpha, beta, depth, board):
 
     if depth == 0:
         tree_size += 1
-        test2 = evaluate.evaluate(board, board.side^1)
-        return test2
+        return evaluate.evaluate(board, board.side^1)
     
     moves = Moves()
     main.generate_move(moves, board)
 
     for move in moves:
-        board_copy = copy.deepcopy(board)
+        board_copy = pickle.dumps(board)
 
         if not main.make_move(move, board):
             continue
 
         value = alpha_beta_max(alpha, beta, depth - 1, board)
 
-        board = board_copy
+        board = pickle.loads(board_copy)
 
         if value <= alpha:
             return alpha
