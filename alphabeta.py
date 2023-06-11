@@ -1,5 +1,5 @@
 import time
-import evaluate
+import evaluate_np as evaluate
 import main
 import copy
 
@@ -30,11 +30,11 @@ def minimax(allowed_time: int, depth: int, board: main.Board):
 
         board_copy = copy.deepcopy(board)
         if not main.make_move(move, board):
-            #print("ILLEGAL")
             continue
-        main.print_board(board)
 
         value = alpha_beta(depth - 1, not maximize, board)
+
+        main.print_board(board)
 
         board = copy.deepcopy(board_copy)
 
@@ -45,7 +45,7 @@ def minimax(allowed_time: int, depth: int, board: main.Board):
             best_value = value
             best_move = move
 
-    
+    print(str(time.time() - timer) + "s")
     print(tree_size)
     return best_move
 
@@ -63,17 +63,15 @@ def alpha_beta_max(alpha, beta, depth, board):
     if depth == 0:
         tree_size += 1
         test1 = evaluate.evaluate(board, board.side)
-        #print(f"test1: max: {test1}")
         return test1
 
     moves = Moves()
     main.generate_move(moves, board)
 
     for move in moves:
-
         board_copy = copy.deepcopy(board)
 
-        if not main.make_move(move, board):
+        if not main.make_move(move, board): 
             continue
 
         value = alpha_beta_min(alpha, beta, depth - 1, board)
@@ -93,18 +91,15 @@ def alpha_beta_min(alpha, beta, depth, board):
     if depth == 0:
         tree_size += 1
         test2 = evaluate.evaluate(board, board.side^1)
-        #print(f"test1: min: {test2}")
         return test2
     
     moves = Moves()
     main.generate_move(moves, board)
 
     for move in moves:
-
         board_copy = copy.deepcopy(board)
 
         if not main.make_move(move, board):
-            #print("ILLEGAL MOVE")
             continue
 
         value = alpha_beta_max(alpha, beta, depth - 1, board)

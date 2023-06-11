@@ -672,7 +672,7 @@ def make_move(move, board):
         board.board[target] = promoted_piece
 
     #update king position
-    if board.board[position] == K or board.board[position] == k:
+    if board.board[target] == K or board.board[target] == k:
         board.king_position[board.side] = target
 
     #castling moves
@@ -703,12 +703,16 @@ def make_move(move, board):
     #is king attacked
     if is_position_attacked(board.king_position[board.side^1], board, board.side):
         #undo move 
+        #print("BEFORE UNDOING MOVE")
+        #print_board(board)
+
         board = copy.deepcopy(board_copy)
+
+        #print("AFTER UNDOING MOVE")
+        #print_board(board)
+
         return 0
-
     else:
-        #legal move
-
         return 1
 
 
@@ -762,7 +766,6 @@ def loop_game(depth, allowed_time, board):
         if checkmate == False:
             checkmate = check_mate(board)
             board = copy.deepcopy(board_copy_after_one_move_before_second)
-        #
     if remi == True:
         print("Remi")
     else:
@@ -773,22 +776,19 @@ def main():
 
     board = Board()
 
-    
+    load_fen(start_position, board)
     allowed_time = 2
-    load_fen(start_position, board)
-    board.board = [
-    r, n, b, q, k, b, e, r, o, o, o, o, o, o, o, o,
-    p, p, p, p, p, p, p, p, o, o, o, o, o, o, o, o,
-    e, e, e, e, e, n, e, e, o, o, o, o, o, o, o, o,
-    e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
-    e, e, e, P, e, e, e, e, o, o, o, o, o, o, o, o,
-    e, e, e, e, e, N, e, e, o, o, o, o, o, o, o, o,
-    P, P, P, e, P, P, P, P, o, o, o, o, o, o, o, o,
-    R, N, B, Q, K, B, e, R, o, o, o, o, o, o, o, o
-]
-    load_fen(start_position, board)
-
-    print(board.side^1)
+    #board.board = [
+    #e, e, e, e, e, e, r, e, o, o, o, o, o, o, o, o,
+    #e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    #e, e, e, e, K, e, e, e, o, o, o, o, o, o, o, o,
+    #e, e, e, r, e, r, e, e, o, o, o, o, o, o, o, o,
+    #e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    #e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    #e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    #e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o
+#]
+    print(board.board)
     print_stats(board)
     print_board(board)
     print("eval: ",evaluate.evaluate(board, white))
