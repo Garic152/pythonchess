@@ -1,19 +1,16 @@
-
 from random import randrange
 import time
-import copy
-
+import pickle
 
 import evaluate
 import alphabeta
 
-#defining the piece integer representation
+# defining the piece integer representation
 e, P, N, B, R, Q, K, p, n, b, r, q, k, o = range(14)
 
 white, black = range(2)
 
 Castling = {'KC': 1, 'QC': 2, 'kc': 4, 'qc': 8}
-
 
 square_representation = [
     'a8', 'b8', 'c8', 'd8', 'e8', 'f8', 'g8', 'h8', 'i8', 'j8', 'k8', 'l8', 'm8', 'n8', 'o8', 'p8',
@@ -26,33 +23,29 @@ square_representation = [
     'a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1', 'i1', 'j1', 'k1', 'l1', 'm1', 'n1', 'o1', 'p1'
 ]
 
-
 char_ascii = '.PNBRQKpnbrqk'
 char_sides = 'wb'
 
-#from ascii to normal chars
+# from ascii to normal chars
 char_pieces = {'P': P, 'N': N, 'B': B, 'R': R, 'Q': Q, 'K': K, 'p': p, 'n': n, 'b': b, 'r': r, 'q': q, 'k': k}
 promoted_pieces = {Q: 'q', R: 'r', B: 'b', N: 'n', q: 'q', r: 'r', b: 'b', n: 'n'}
-
 
 start_position = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 fen = 'r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1'
 
-
-
-#castling rights in bit representation, where 15 is 1111, meaning both sides can castle both on the queen and king side
+# castling rights in bit representation, where 15 is 1111, meaning both sides can castle both on the queen and king side
 castling_rights = [
-    7, 15, 15, 15,  3, 15, 15, 11,  o, o, o, o, o, o, o, o,
-    15, 15, 15, 15, 15, 15, 15, 15,  o, o, o, o, o, o, o, o,
-    15, 15, 15, 15, 15, 15, 15, 15,  o, o, o, o, o, o, o, o,
-    15, 15, 15, 15, 15, 15, 15, 15,  o, o, o, o, o, o, o, o,
-    15, 15, 15, 15, 15, 15, 15, 15,  o, o, o, o, o, o, o, o,
-    15, 15, 15, 15, 15, 15, 15, 15,  o, o, o, o, o, o, o, o,
-    15, 15, 15, 15, 15, 15, 15, 15,  o, o, o, o, o, o, o, o,
-    13, 15, 15, 15, 12, 15, 15, 14,  o, o, o, o, o, o, o, o
-    ]
+    7, 15, 15, 15, 3, 15, 15, 11, o, o, o, o, o, o, o, o,
+    15, 15, 15, 15, 15, 15, 15, 15, o, o, o, o, o, o, o, o,
+    15, 15, 15, 15, 15, 15, 15, 15, o, o, o, o, o, o, o, o,
+    15, 15, 15, 15, 15, 15, 15, 15, o, o, o, o, o, o, o, o,
+    15, 15, 15, 15, 15, 15, 15, 15, o, o, o, o, o, o, o, o,
+    15, 15, 15, 15, 15, 15, 15, 15, o, o, o, o, o, o, o, o,
+    15, 15, 15, 15, 15, 15, 15, 15, o, o, o, o, o, o, o, o,
+    13, 15, 15, 15, 12, 15, 15, 14, o, o, o, o, o, o, o, o
+]
 
-#piece movement offsets
+# piece movement offsets
 knight_movement = [33, 31, 18, 14, -33, -31, -18, -14]
 bishop_movement = [15, 17, -15, -17]
 rook_movement = [16, -16, 1, -1]
@@ -60,7 +53,7 @@ king_movement = [16, -16, 1, -1, 15, 17, -15, -17]
 
 """ /*
     Move formatting
-    
+
     0000 0000 0000 0000 0111 1111       current position
     0000 0000 0011 1111 1000 0000       target position
     0000 0011 1100 0000 0000 0000       promotion piece
@@ -70,18 +63,19 @@ king_movement = [16, -16, 1, -1, 15, 17, -15, -17]
 
 */ """
 
-#board information class
+
+# board information class
 class Board:
     def __init__(self):
         self.board = [
-        r, n, b, q, k, b, n, r, o, o, o, o, o, o, o, o,
-        p, p, p, p, p, p, p, p, o, o, o, o, o, o, o, o,
-        e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
-        e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
-        e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
-        e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
-        P, P, P, P, P, P, P, P, o, o, o, o, o, o, o, o,
-        R, N, B, Q, K, B, N, R, o, o, o, o, o, o, o, o
+            r, n, b, q, k, b, n, r, o, o, o, o, o, o, o, o,
+            p, p, p, p, p, p, p, p, o, o, o, o, o, o, o, o,
+            e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+            e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+            e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+            e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+            P, P, P, P, P, P, P, P, o, o, o, o, o, o, o, o,
+            R, N, B, Q, K, B, N, R, o, o, o, o, o, o, o, o
         ]
 
         self.king_position = [116, 4]
@@ -89,44 +83,42 @@ class Board:
         self.can_castle = 0
         self.countercheck = 0
 
-        #define board state copy variable
+        # define board state copy variable
         self.board_copy = [0] * 128
         self.king_position_copy = [2]
         self.side_copy = 0
         self.can_castle_copy = 0
 
     def copy_move(self):
-        #define board state copy variable
+        # define board state copy variable
         self.board_copy = [0] * 128
         self.king_position_copy = [2]
         self.side_copy = 0
         self.can_castle_copy = 0
 
-        #copy board state
+        # copy board state
         self.board_copy = self.board.copy()
         self.king_position_copy = self.king_position.copy()
         self.side_copy = self.side
         self.can_castle_copy = self.can_castle
 
-
     def undo_move(self):
-        #undo board state
+        # undo board state
         self.board = self.board_copy.copy()
         self.king_position = self.king_position_copy.copy()
         self.side = self.side_copy
         self.can_castle = self.can_castle_copy
 
 
-
 # define movement information with bits
 def set_move(current, target, promotion_piece, capture, double_pawn, castling):
     return (
-        current
-        | (target << 7)
-        | (promotion_piece << 14)
-        | (capture << 18)
-        | (double_pawn << 19)
-        | (castling << 20)
+            current
+            | (target << 7)
+            | (promotion_piece << 14)
+            | (capture << 18)
+            | (double_pawn << 19)
+            | (castling << 20)
     )
 
 
@@ -155,20 +147,18 @@ def get_move_castling(move):
     return (move >> 20) & 0x1
 
 
-#move list
+# move list
 class Moves:
     def __init__(self):
         self.moves = []
         self.count = 0
 
-    
     def add_move(self, move):
-        #add move to the list
+        # add move to the list
         self.moves.append(move)
 
-        #increase move counter
+        # increase move counter
         self.count += 1
-
 
     def __getitem__(self, index):
         return self.moves[index]
@@ -184,6 +174,7 @@ def clear_board(board):
             if not position & 0x88:
                 # clears the board
                 board.board[position] = e
+
 
 def print_board(board):
     # loop over column
@@ -233,7 +224,6 @@ def is_position_attacked(position, board, side):
             if not ((position + move) & 0x88) and board.board[position + move] == k:
                 return True
 
-
     # attacked by Bishop and Queen
     for move in bishop_movement:
         # creates new temp position
@@ -247,9 +237,9 @@ def is_position_attacked(position, board, side):
 
             # checks if the position is attacked by B & Q
             if (
-                (target == B or target == Q)
-                if not side
-                else (target == b or target == q)
+                    (target == B or target == Q)
+                    if not side
+                    else (target == b or target == q)
             ):
                 return True
 
@@ -268,9 +258,9 @@ def is_position_attacked(position, board, side):
             target = board.board[new_position]
 
             if (
-                (target == R or target == Q)
-                if not side
-                else (target == r or target == q)
+                    (target == R or target == Q)
+                    if not side
+                    else (target == r or target == q)
             ):
                 return True
 
@@ -279,6 +269,7 @@ def is_position_attacked(position, board, side):
 
             new_position += move
     return 0
+
 
 def print_attack(board):
     # loop over column
@@ -316,15 +307,14 @@ def load_fen(fen, board):
             # check if the piece is on the field
             if not position & 0x88:
                 if (fen[fen_position] > "a" and fen[fen_position] < "z") or (
-                    fen[fen_position] > "A" and fen[fen_position] < "Z"):
+                        fen[fen_position] > "A" and fen[fen_position] < "Z"):
 
-                    #set king square
+                    # set king square
                     if (fen[fen_position] == 'K'):
                         board.king_position[white] = position
-                
+
                     elif (fen[fen_position] == 'k'):
                         board.king_position[black] = position
-
 
                     # set current board position to fen piece
                     board.board[position] = char_pieces[fen[fen_position]]
@@ -390,16 +380,16 @@ def generate_move(move, board):
                             if (position > 95 and position < 104) and not board.board[
                                 position - 32
                             ]:
-                                #move 2 squares ahead
+                                # move 2 squares ahead
                                 move.add_move(set_move(position, position - 32, 0, 0, 1, 0))
 
                     # pawn capture moves
                     for movement in bishop_movement:
                         if (
-                            not (position - movement) & 0x88
-                            and board.board[position - movement]
-                            and movement > 0
-                            and board.board[position - movement] > 6
+                                not (position - movement) & 0x88
+                                and board.board[position - movement]
+                                and movement > 0
+                                and board.board[position - movement] > 6
                         ):
                             # look for promotion capture
                             if position > 15 and position < 24:
@@ -418,11 +408,11 @@ def generate_move(move, board):
                 if board.board[position] == K:
                     # check king side castle
                     if (
-                        board.can_castle & Castling["KC"]
-                        and position == 116
-                        and not board.board[117]
-                        and not board.board[118]
-                        and board.board[119] == R
+                            board.can_castle & Castling["KC"]
+                            and position == 116
+                            and not board.board[117]
+                            and not board.board[118]
+                            and board.board[119] == R
                     ):
                         # temp variable to check if any pieces king side are attacked
                         is_attacked = False
@@ -436,12 +426,12 @@ def generate_move(move, board):
 
                     # check queen side castle
                     if (
-                        board.can_castle & Castling["QC"]
-                        and position == 116
-                        and not board.board[115]
-                        and not board.board[114]
-                        and not board.board[113]
-                        and board.board[112] == R
+                            board.can_castle & Castling["QC"]
+                            and position == 116
+                            and not board.board[115]
+                            and not board.board[114]
+                            and not board.board[113]
+                            and board.board[112] == R
                     ):
                         # temp variable to check if any pieces king side are attacked
                         is_attacked = False
@@ -477,10 +467,10 @@ def generate_move(move, board):
 
                     for movement in bishop_movement:
                         if (
-                            not (position - movement) & 0x88
-                            and board.board[position - movement]
-                            and movement < 0
-                            and board.board[position - movement] < 7
+                                not (position - movement) & 0x88
+                                and board.board[position - movement]
+                                and movement < 0
+                                and board.board[position - movement] < 7
                         ):
                             if position > 95 and position < 104:
                                 pass
@@ -496,11 +486,11 @@ def generate_move(move, board):
                 # black king castling, doucmentation in white king moves
                 if board.board[position] == k:
                     if (
-                        board.can_castle & Castling["kc"]
-                        and position == 4
-                        and not board.board[5]
-                        and not board.board[6]
-                        and board.board[7] == r
+                            board.can_castle & Castling["kc"]
+                            and position == 4
+                            and not board.board[5]
+                            and not board.board[6]
+                            and board.board[7] == r
                     ):
                         is_attacked = False
                         for i in range(4, 7):
@@ -512,12 +502,12 @@ def generate_move(move, board):
                             move.add_move(set_move(4, 6, 0, 0, 0, 1))
 
                     if (
-                        board.can_castle & Castling["qc"]
-                        and position == 4
-                        and not board.board[3]
-                        and not board.board[2]
-                        and not board.board[1]
-                        and board.board[0] == r
+                            board.can_castle & Castling["qc"]
+                            and position == 4
+                            and not board.board[3]
+                            and not board.board[2]
+                            and not board.board[1]
+                            and board.board[0] == r
                     ):
                         is_attacked = False
                         for i in range(1, 5):
@@ -539,9 +529,9 @@ def generate_move(move, board):
 
                         # 2 situations for either white or black pieces
                         if (
-                            (not target or (target >= 7 and target <= 12))
-                            if not board.side
-                            else (not target or (target >= 1 and target <= 6))
+                                (not target or (target >= 7 and target <= 12))
+                                if not board.side
+                                else (not target or (target >= 1 and target <= 6))
                         ):
                             # check if it captured something or hits empty square
                             if target:
@@ -559,9 +549,9 @@ def generate_move(move, board):
                         target = board.board[position + movement]
 
                         if (
-                            (not target or (target >= 7 and target <= 12))
-                            if not board.side
-                            else (not target or (target >= 1 and target <= 6))
+                                (not target or (target >= 7 and target <= 12))
+                                if not board.side
+                                else (not target or (target >= 1 and target <= 6))
                         ):
                             if target:
                                 pass
@@ -573,9 +563,9 @@ def generate_move(move, board):
 
             # bishop and queen movement
             if (
-                ((board.board[position] == B) or (board.board[position] == Q))
-                if not board.side
-                else ((board.board[position] == b) or (board.board[position] == q))
+                    ((board.board[position] == B) or (board.board[position] == Q))
+                    if not board.side
+                    else ((board.board[position] == b) or (board.board[position] == q))
             ):
                 # loop over bishop and queen moves
                 for movement in bishop_movement:
@@ -589,17 +579,17 @@ def generate_move(move, board):
 
                         # if it hits own piece
                         if (
-                            (piece >= 1 and piece <= 6)
-                            if not board.side
-                            else (piece >= 7 and piece <= 12)
+                                (piece >= 1 and piece <= 6)
+                                if not board.side
+                                else (piece >= 7 and piece <= 12)
                         ):
                             break
 
                         # if it hits opponent piece
                         if (
-                            (piece >= 7 and piece <= 12)
-                            if not board.side
-                            else (piece >= 1 and piece <= 6)
+                                (piece >= 7 and piece <= 12)
+                                if not board.side
+                                else (piece >= 1 and piece <= 6)
                         ):
                             move.add_move(set_move(position, position + current_movement, 0, 1, 0, 0))
                             break
@@ -614,9 +604,9 @@ def generate_move(move, board):
 
             # rook and queen movement documentation in above code
             if (
-                ((board.board[position] == R) or (board.board[position] == Q))
-                if not board.side
-                else ((board.board[position] == r) or (board.board[position] == q))
+                    ((board.board[position] == R) or (board.board[position] == Q))
+                    if not board.side
+                    else ((board.board[position] == r) or (board.board[position] == q))
             ):
                 for movement in rook_movement:
                     target = position + movement
@@ -626,16 +616,16 @@ def generate_move(move, board):
                         piece = board.board[target]
 
                         if (
-                            (piece >= 1 and piece <= 6)
-                            if not board.side
-                            else (piece >= 7 and piece <= 12)
+                                (piece >= 1 and piece <= 6)
+                                if not board.side
+                                else (piece >= 7 and piece <= 12)
                         ):
                             break
 
                         if (
-                            (piece >= 7 and piece <= 12)
-                            if not board.side
-                            else (piece >= 1 and piece <= 6)
+                                (piece >= 7 and piece <= 12)
+                                if not board.side
+                                else (piece >= 1 and piece <= 6)
                         ):
                             move.add_move(set_move(position, position + current_movement, 0, 1, 0, 0))
                             break
@@ -644,38 +634,38 @@ def generate_move(move, board):
                         if not piece:
                             move.add_move(set_move(position, position + current_movement, 0, 0, 0, 0))
                             pass
-                        
+
                         current_movement += movement
                         target += movement
 
 
-#make move
+# make move
 def make_move(move, board):
-    board_copy = copy.deepcopy(board)
+    board_copy = pickle.dumps(board)
 
-    #get current and target position
+    # get current and target position
     position = get_move_source(move)
     target = get_move_target(move)
     promoted_piece = get_move_piece(move)
     castling = get_move_castling(move)
 
-    #if target is king
+    # if target is king
     if board.board[target] == K or board.board[target] == k:
         return 0
-    
-    #update king position
+
+    # update king position
     if board.board[position] == K or board.board[position] == k:
         board.king_position[board.side] = target
 
-    #make the move
+    # make the move
     board.board[target] = board.board[position]
     board.board[position] = e
 
-    #promote pawn
+    # promote pawn
     if promoted_piece:
         board.board[target] = promoted_piece
 
-    #castling moves
+    # castling moves
     if castling:
         match target:
             case 118:
@@ -691,25 +681,25 @@ def make_move(move, board):
                 board.board[3] = board.board[0]
                 board.board[0] = e
 
-    #change castling rights
+    # change castling rights
     board.can_castle &= castling_rights[position]
     board.can_castle &= castling_rights[target]
 
-    #change side
+    # change side
     board.side ^= 1
 
-    #print("Moving " + square_representation[position] + " to " + square_representation[target])
+    # print("Moving " + square_representation[position] + " to " + square_representation[target])
 
-    #is king attacked
-    if is_position_attacked(board.king_position[board.side^1], board, board.side):
-        #undo move 
-        #print("BEFORE UNDOING MOVE")
-        #print_board(board)
+    # is king attacked
+    if is_position_attacked(board.king_position[board.side ^ 1], board, board.side):
+        # undo move
+        # print("BEFORE UNDOING MOVE")
+        # print_board(board)
 
-        board = board_copy
+        board = pickle.loads(board_copy)
 
-        #print("AFTER UNDOING MOVE")
-        #print_board(board)
+        # print("AFTER UNDOING MOVE")
+        # print_board(board)
 
         return 0
     else:
@@ -717,47 +707,56 @@ def make_move(move, board):
 
 
 def get_time_ms():
-    return time.process_time() 
+    return time.process_time()
 
 
 def check_mate(board):
     global tree_size
     moves = Moves()
-    board_copy_for_check_mate_function = copy.deepcopy(board)
+    board_copy_for_check_mate_function = pickle.dumps(board)
     # moves.count = 0
     generate_move(moves, board)
     checklist = []
     for move in moves:
-        board_copy = copy.deepcopy(board)
+        board_copy = pickle.dumps(board)
 
         if not make_move(move, board):
             continue
         checklist.append(move)
 
-        board = board_copy
+        board = pickle.loads(board_copy)
     board = board_copy_for_check_mate_function
     return checklist == []
 
 
-#loop over game
+# loop over game
 def loop_game(depth, allowed_time, board):
     checkmate = False
     remi = False
     boards = []
     while not checkmate:
-        board_copy = copy.deepcopy(board)
-        best_move = alphabeta.minimax(allowed_time, depth, board)
-        board = copy.deepcopy(board_copy)
-        print(f"eval {evaluate.evaluate(board,board.side)} for side: {board.side} before best move ")
+        testing_board = [10, 8, 9, 11, 12, 9, 8, 10, 13, 13, 13, 13, 13, 13, 13, 13, 7, 7, 7, 7, 7, 7, 7, 7, 13, 13, 13,
+                         13, 13, 13, 13, 13, 0, 0, 0, 0, 0, 0, 0, 0, 13, 13, 13, 13, 13, 13, 13, 13, 0, 0, 0, 0, 0, 0,
+                         0, 0, 13, 13, 13, 13, 13, 13, 13, 13, 0, 0, 0, 0, 0, 0, 0, 0, 13, 13, 13, 13, 13, 13, 13, 13,
+                         0, 0, 0, 0, 0, 0, 0, 2, 13, 13, 13, 13, 13, 13, 13, 13, 1, 1, 1, 1, 1, 1, 1, 1, 13, 13, 13, 13,
+                         13, 13, 13, 13, 4, 2, 3, 5, 6, 3, 0, 4, 13, 13, 13, 13, 13, 13, 13, 13]
+        boards.append(testing_board)
+        boards.append(testing_board)
+        board_copy = pickle.dumps(board)
+        best_move = alphabeta.minimax(allowed_time, depth, board, boards)
+        board = pickle.loads(board_copy)
+        print(f"eval {evaluate.evaluate(board, board.side)} for side: {board.side} before best move ")
         make_move(best_move, board)
-        print(f"eval {evaluate.evaluate(board,board.side^1)} for side: {board.side^1} after best move ")
+        print(f"eval {evaluate.evaluate(board, board.side ^ 1)} for side: {board.side ^ 1} after best move ")
 
-        #print best move and board
-        print("Best move: " + char_ascii[board.board[get_move_target(best_move)]] + " on "  + square_representation[get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
+        # print best move and board
+        print("Best move: " + char_ascii[board.board[get_move_target(best_move)]] + " on " + square_representation[
+            get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
         print_board(board)
+
         inp = input(" ")
 
-        board_copy_after_one_move_before_second = copy.deepcopy(board)
+        board_copy_after_one_move_before_second = pickle.dumps(board)
         boards.append(board.board)
         for pastboard in boards:
             if boards.count(pastboard) >= 3:
@@ -765,7 +764,7 @@ def loop_game(depth, allowed_time, board):
                 checkmate = True
         if checkmate == False:
             checkmate = check_mate(board)
-            board = copy.deepcopy(board_copy_after_one_move_before_second)
+            board = pickle.loads(board_copy_after_one_move_before_second)
     if remi == True:
         print("Remi")
     else:
@@ -773,29 +772,27 @@ def loop_game(depth, allowed_time, board):
 
 
 def main():
-
     board = Board()
 
     load_fen(start_position, board)
     allowed_time = 2
-    #board.board = [
-    #e, e, e, e, e, e, r, e, o, o, o, o, o, o, o, o,
-    #e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
-    #e, e, e, e, K, e, e, e, o, o, o, o, o, o, o, o,
-    #e, e, e, r, e, r, e, e, o, o, o, o, o, o, o, o,
-    #e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
-    #e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
-    #e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
-    #e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o
-#]
+    # board.board = [
+    # e, e, e, e, e, e, r, e, o, o, o, o, o, o, o, o,
+    # e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    # e, e, e, e, K, e, e, e, o, o, o, o, o, o, o, o,
+    # e, e, e, r, e, r, e, e, o, o, o, o, o, o, o, o,
+    # e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    # e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    # e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o,
+    # e, e, e, e, e, e, e, e, o, o, o, o, o, o, o, o
+    # ]
     print(board.board)
     print_stats(board)
     print_board(board)
-    print("eval: ",evaluate.evaluate(board, white))
-    loop_game(3, allowed_time, board)
+    print("eval: ", evaluate.evaluate(board, white))
+    loop_game(4, allowed_time, board)
 
-    #print(tree_size)
+    # print(tree_size)
 
-    
 if __name__ == "__main__":
     main()

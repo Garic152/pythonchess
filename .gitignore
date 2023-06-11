@@ -167,3 +167,7 @@ cython_debug/
 #.idea/
 .idea/other.xml
 .idea/workspace.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/misc.xml
+.idea/pythonchess.iml
+.idea/vcs.xml

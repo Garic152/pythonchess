@@ -8,7 +8,7 @@ from main import Moves
 
 tree_size = 0
 
-def minimax(allowed_time: int, depth: int, board: main.Board):
+def minimax(allowed_time: int, depth: int, board: main.Board, remi_list):
     global tree_size
 
     tree_size = 0
@@ -25,10 +25,21 @@ def minimax(allowed_time: int, depth: int, board: main.Board):
         return 0
     
     for move in moves:
-
+        remi = False
         board_copy = pickle.dumps(board)
-
+        remicheck_copy = remi_list
         if not main.make_move(move, board):
+            continue
+
+        remicheck_copy.append(board.board)
+        for pastboard in remicheck_copy:
+            if remicheck_copy.count(pastboard) >= 3:
+                print("Found Remi for Board:")
+                main.print_board(board)
+                remi = True
+                break
+        if remi:
+            board = pickle.loads(board_copy)
             continue
 
         value = alpha_beta(depth - 1, not maximize, board)
@@ -98,6 +109,8 @@ def alpha_beta_min(alpha, beta, depth, board):
 
         if not main.make_move(move, board):
             continue
+
+
 
         value = alpha_beta_max(alpha, beta, depth - 1, board)
 
