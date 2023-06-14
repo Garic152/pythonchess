@@ -13,17 +13,17 @@ def minimax(allowed_time: int, depth: int, board: main.Board, remi_list):
 
     tree_size = 0
 
-    maximize = board.side^1
+    maximize = board.side ^ 1
     best_value = -float("inf") if maximize else float("inf")
-    
+
     timer = time.time()
 
     moves = Moves()
     main.generate_move(moves, board)
-    
+
     if len(moves.moves) == 0:
         return 0
-    
+
     for move in moves:
         remi = False
         board_copy = pickle.dumps(board)
@@ -77,14 +77,16 @@ def alpha_beta_max(alpha, beta, depth, board):
     moves = Moves()
     main.generate_move(moves, board)
 
-    #nullmovetest
-
-
+    # Perform null move and evaluate the resulting position
+    if depth >= 2:
+        null_value = alpha_beta_min(alpha, beta, depth - 2, board)
+        if null_value >= beta:
+            return beta
 
     for move in moves:
         board_copy = pickle.dumps(board)
 
-        if not main.make_move(move, board): 
+        if not main.make_move(move, board):
             continue
 
         value = alpha_beta_min(alpha, beta, depth - 1, board)
@@ -103,22 +105,22 @@ def alpha_beta_min(alpha, beta, depth, board):
 
     if depth == 0:
         tree_size += 1
-        return evaluate.evaluate(board, board.side^1)
-    
+        return evaluate.evaluate(board, board.side ^ 1)
+
     moves = Moves()
     main.generate_move(moves, board)
 
-    # nullmovetest
-
-
+    # Perform null move and evaluate the resulting position
+    if depth >= 2:
+        null_value = alpha_beta_max(alpha, beta, depth - 2, board)
+        if null_value <= alpha:
+            return alpha
 
     for move in moves:
         board_copy = pickle.dumps(board)
 
         if not main.make_move(move, board):
             continue
-
-
 
         value = alpha_beta_max(alpha, beta, depth - 1, board)
 

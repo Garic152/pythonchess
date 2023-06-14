@@ -792,7 +792,7 @@ def main():
     print_stats(board)
     print_board(board)
     print("eval: ", evaluate.evaluate(board, white))
-    loop_game(5, allowed_time, board)
+    loop_game(3, allowed_time, board)
 
     # print(tree_size)
 
