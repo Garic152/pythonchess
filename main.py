@@ -735,16 +735,17 @@ def loop_game(depth, allowed_time, board):
     remi = False
     boards = []
     while not checkmate:
+
         testing_board = [10, 8, 9, 11, 12, 9, 8, 10, 13, 13, 13, 13, 13, 13, 13, 13, 7, 7, 7, 7, 7, 7, 7, 7, 13, 13, 13,
                          13, 13, 13, 13, 13, 0, 0, 0, 0, 0, 0, 0, 0, 13, 13, 13, 13, 13, 13, 13, 13, 0, 0, 0, 0, 0, 0,
                          0, 0, 13, 13, 13, 13, 13, 13, 13, 13, 0, 0, 0, 0, 0, 0, 0, 0, 13, 13, 13, 13, 13, 13, 13, 13,
                          0, 0, 0, 0, 0, 0, 0, 2, 13, 13, 13, 13, 13, 13, 13, 13, 1, 1, 1, 1, 1, 1, 1, 1, 13, 13, 13, 13,
                          13, 13, 13, 13, 4, 2, 3, 5, 6, 3, 0, 4, 13, 13, 13, 13, 13, 13, 13, 13]
-        boards.append(testing_board)
-        boards.append(testing_board)
+        boards_copy = pickle.dumps(boards)
         board_copy = pickle.dumps(board)
         best_move = alphabeta.minimax(allowed_time, depth, board, boards)
         board = pickle.loads(board_copy)
+        boards = pickle.loads(boards_copy)
         print(f"eval {evaluate.evaluate(board, board.side)} for side: {board.side} before best move ")
         make_move(best_move, board)
         print(f"eval {evaluate.evaluate(board, board.side ^ 1)} for side: {board.side ^ 1} after best move ")
@@ -753,11 +754,12 @@ def loop_game(depth, allowed_time, board):
         print("Best move: " + char_ascii[board.board[get_move_target(best_move)]] + " on " + square_representation[
             get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
         print_board(board)
-
+        print(len(boards))
         inp = input(" ")
 
         board_copy_after_one_move_before_second = pickle.dumps(board)
         boards.append(board.board)
+
         for pastboard in boards:
             if boards.count(pastboard) >= 3:
                 remi = True
@@ -790,7 +792,7 @@ def main():
     print_stats(board)
     print_board(board)
     print("eval: ", evaluate.evaluate(board, white))
-    loop_game(4, allowed_time, board)
+    loop_game(5, allowed_time, board)
 
     # print(tree_size)
 

@@ -77,6 +77,10 @@ def alpha_beta_max(alpha, beta, depth, board):
     moves = Moves()
     main.generate_move(moves, board)
 
+    #nullmovetest
+
+
+
     for move in moves:
         board_copy = pickle.dumps(board)
 
@@ -103,6 +107,10 @@ def alpha_beta_min(alpha, beta, depth, board):
     
     moves = Moves()
     main.generate_move(moves, board)
+
+    # nullmovetest
+
+
 
     for move in moves:
         board_copy = pickle.dumps(board)
