@@ -72,12 +72,12 @@ def minimax(allowed_time: int, depth: int, board: main.Board, remi_list):
 
 def alpha_beta(depth: int, maximize: bool, board):
     if maximize:
-        return alpha_beta_max(-float("inf"), float("inf"), depth, board)
+        return alpha_beta_max(-float("inf"), float("inf"), depth, board, False)
     else:
-        return alpha_beta_min(-float("inf"), float("inf"), depth, board)
+        return alpha_beta_min(-float("inf"), float("inf"), depth, board, False)
 
 
-def alpha_beta_max(alpha, beta, depth, board):
+def alpha_beta_max(alpha, beta, depth, board, nullmove):
     global tree_size
 
     if depth == 0:
@@ -90,8 +90,8 @@ def alpha_beta_max(alpha, beta, depth, board):
     moves = sort(board, moves.moves)
 
     # Perform null move and evaluate the resulting position
-    if depth >= 2:
-        null_value = alpha_beta_min(alpha, beta, depth - 2, board)
+    if depth >= 2 and not nullmove:
+        null_value = alpha_beta_min(alpha, beta, depth - 2, board, True)
         if null_value >= beta:
             return beta
 
@@ -113,7 +113,7 @@ def alpha_beta_max(alpha, beta, depth, board):
     return alpha
 
 
-def alpha_beta_min(alpha, beta, depth, board):
+def alpha_beta_min(alpha, beta, depth, board, nullmove):
     global tree_size
 
     if depth == 0:
@@ -126,8 +126,8 @@ def alpha_beta_min(alpha, beta, depth, board):
     moves = sort(board, moves.moves)
 
     # Perform null move and evaluate the resulting position
-    if depth >= 2:
-        null_value = alpha_beta_max(alpha, beta, depth - 2, board)
+    if depth >= 2 and not nullmove:
+        null_value = alpha_beta_max(alpha, beta, depth - 2, board, True)
         if null_value <= alpha:
             return alpha
 
