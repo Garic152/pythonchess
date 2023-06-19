@@ -104,7 +104,7 @@ def alpha_beta_max(alpha, beta, depth, board, nullmove):
             board = pickle.loads(board_copy)
             continue
 
-        value = alpha_beta_min(alpha, beta, depth - 1, board)
+        value = alpha_beta_min(alpha, beta, depth - 1, board, nullmove)
 
         board = pickle.loads(board_copy)
 
@@ -140,7 +140,7 @@ def alpha_beta_min(alpha, beta, depth, board, nullmove):
             board = pickle.loads(board_copy)
             continue
 
-        value = alpha_beta_max(alpha, beta, depth - 1, board)
+        value = alpha_beta_max(alpha, beta, depth - 1, board, nullmove)
 
         board = pickle.loads(board_copy)
 
