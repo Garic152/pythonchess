@@ -20,12 +20,12 @@ def minimax(allowed_time: int, depth: int, board: main.Board, remi_list):
     global tree_size
 
     tree_size = 0
-
+    reservemove = 0
     global startdepth
     startdepth = depth-1
     maximize = board.side ^ 1
     best_value = -float("inf") if maximize else float("inf")
-
+    best_move = 0
     timer = time.time()
 
     moves = Moves()
@@ -49,6 +49,7 @@ def minimax(allowed_time: int, depth: int, board: main.Board, remi_list):
                 print("Found Remi for Board:")
                 main.print_board(board)
                 remi = True
+                move = reservemove
                 break
         if remi:
             board = pickle.loads(board_copy)
@@ -69,6 +70,8 @@ def minimax(allowed_time: int, depth: int, board: main.Board, remi_list):
 
     print(str(time.time() - timer) + "s")
     print(tree_size)
+    if not best_move:
+        best_move = reservemove
     return best_move
 
 
