@@ -467,10 +467,10 @@ def generate_move(move, board):
 
                     for movement in bishop_movement:
                         if (
-                                not (position - movement) & 0x88
-                                and board.board[position - movement]
-                                and movement < 0
-                                and board.board[position - movement] < 7
+                                not (position + movement) & 0x88
+                                and board.board[position + movement]
+                                and movement > 0
+                                and board.board[position + movement] < 7
                         ):
                             if position > 95 and position < 104:
                                 pass
