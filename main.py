@@ -641,7 +641,6 @@ def generate_move(move, board):
 
 # make move
 def make_move(move, board):
-    board_copy = pickle.dumps(board)
 
     # get current and target position
     position = get_move_source(move)
@@ -695,8 +694,6 @@ def make_move(move, board):
         # undo move
         # print("BEFORE UNDOING MOVE")
         # print_board(board)
-
-        board = pickle.loads(board_copy)
 
         # print("AFTER UNDOING MOVE")
         # print_board(board)

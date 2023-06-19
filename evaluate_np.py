@@ -1,4 +1,7 @@
 import numpy as np
+import pickle
+
+from main import make_move
 
 white, black = range(2)
 
@@ -227,3 +230,21 @@ def count_material(local_board, side):
     val = np.sum(piece_values[local_board])
 
     return val*perspective
+
+
+def sort_moves(board, move):
+    value = 0
+
+    board_copy = pickle.dumps(board)
+
+    if not make_move(move, board):
+        board = pickle.loads(board_copy)
+        pass
+
+    for piece in board.board:
+        if piece < 13 and piece > 0:
+            value += piece_values[piece]
+
+    board = pickle.loads(board_copy)
+
+    return value

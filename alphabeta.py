@@ -1,12 +1,20 @@
 import time
 import evaluate_np as evaluate
 import main
-import copy
 import pickle
 
 from main import Moves
+from evaluate_np import sort_moves
 
 tree_size = 0
+
+def sort(board: main.Board, moves: list):
+    def sorter(move):
+        return sort_moves(board, move)
+    
+    move_list = sorted(moves, key=sorter, reverse=(board.side == 0))
+    return move_list
+
 
 def minimax(allowed_time: int, depth: int, board: main.Board, remi_list):
     global tree_size
@@ -28,7 +36,9 @@ def minimax(allowed_time: int, depth: int, board: main.Board, remi_list):
         remi = False
         board_copy = pickle.dumps(board)
         remicheck_copy = remi_list
+
         if not main.make_move(move, board):
+            board = pickle.loads(board_copy)
             continue
 
         remicheck_copy.append(board.board)
@@ -77,6 +87,8 @@ def alpha_beta_max(alpha, beta, depth, board):
     moves = Moves()
     main.generate_move(moves, board)
 
+    moves = sort(board, moves.moves)
+
     # Perform null move and evaluate the resulting position
     if depth >= 2:
         null_value = alpha_beta_min(alpha, beta, depth - 2, board)
@@ -87,6 +99,7 @@ def alpha_beta_max(alpha, beta, depth, board):
         board_copy = pickle.dumps(board)
 
         if not main.make_move(move, board):
+            board = pickle.loads(board_copy)
             continue
 
         value = alpha_beta_min(alpha, beta, depth - 1, board)
@@ -110,6 +123,8 @@ def alpha_beta_min(alpha, beta, depth, board):
     moves = Moves()
     main.generate_move(moves, board)
 
+    moves = sort(board, moves.moves)
+
     # Perform null move and evaluate the resulting position
     if depth >= 2:
         null_value = alpha_beta_max(alpha, beta, depth - 2, board)
@@ -120,6 +135,7 @@ def alpha_beta_min(alpha, beta, depth, board):
         board_copy = pickle.dumps(board)
 
         if not main.make_move(move, board):
+            board = pickle.loads(board_copy)
             continue
 
         value = alpha_beta_max(alpha, beta, depth - 1, board)
