@@ -14,7 +14,7 @@ Cleaning up the code helped us a lot with refactoring and some debugging. The cl
 Even though not as much as expected, implementing numpy to cut out many ressource intensive `for` loops in our evaluate function saved quite some time for generating moves.
 We achieved this by passing the `board` class into the evaluation function and then converting the board list into a numpy array. This allowed us to remove the `for` loops and replace them with array masks and calculations.
 
-After also replacing `deepcopy` with `pickle`, we were able to almost 20x the speed of our move generation, which was a great achievement. More detailed speed comparisons will be shown later in the documentation. 
+After also replacing `deepcopy` with `pickle`, we were able to drastically increase the speed of our move generation, which was a great achievement. More detailed speed comparisons will be shown later in the documentation. 
 
 After refactoring our `make_move()` function we fixed a lot of illegal moves. Unfortunately, we haven't been able to determine why the engine still generates **197,742/197,281** moves at depth 3. We will hopefully be able to fix this in the last milestone.
 
@@ -34,3 +34,22 @@ Adding the null-move heuristic increased the speed quite a lot. Although we had 
 We now finally included a working time-management which unfortunately isn't that helpful because our alpha-beta algorithm uses depth first search. When the time limit is reached not all of the first moves in the tree have been evaluated yet.
 
 ## Benchmark
+
+For testing the results :
+- AMD Ryzen 5 3600X
+- RTX 3070
+- 16GB DDR4
+
+In order to visualize the effectiveness of our changes to the chess engine, we compared the amount of evaluated boards per second for both milestone II and milestone III.
+
+<p align="center">
+    <img src="comparison.png" alt="Plot SVG Image" width="75%">
+    <br>
+    Figure 1: Comparing the evaluated boards/s in milestone II and milestone III.
+  <br>
+    FEN 1: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+  <br>
+    FEN 2: 3r1rk1/p1p1qp1p/1p2b1p1/6n1/R1PNp3/2QP2P1/3B1P1P/5RK1 w - - 0 1
+  <br>
+    FEN 3: 3r4/7p/2p2kp1/2P2p2/3P4/2K3P1/8/5R2 b - - 0 1
+</p>
