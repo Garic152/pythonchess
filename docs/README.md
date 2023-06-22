@@ -25,6 +25,7 @@ We also did some smaller refactoring in the `alphabeta.py` search. This increase
 - Move sorting
 - Null-move heuristic
 - time-management
+- improvement of evaluation function
 
 ### Comments
 With the implementation of move sorting, we were able to reduce the total tree size when doing the alpha beta search. This slightly improved the search speed and didn't have any impact on the move decision itself.
@@ -32,6 +33,17 @@ With the implementation of move sorting, we were able to reduce the total tree s
 Adding the null-move heuristic increased the speed quite a lot. Although we had some trouble adding it to the existing code it should now work properly. It would have been easier if we would have used it from the beginning.
 
 We now finally included a working time-management which unfortunately isn't that helpful because our alpha-beta algorithm uses depth first search. When the time limit is reached not all of the first moves in the tree have been evaluated yet.
+
+We added a lot of new features in `evaluate_np.py`.
+1. Isolated and connected pawn evaluation
+2. Mid-Game piece values
+3. Double pawn evaluation 
+
+We added a mid-game piece position evaluation in order to change the strategy of the algorithm depending to the current game stage. 
+We worked on a better evaluation specifically for pawns because bad pawn structures can be critical to a chessgame if not taken into account.
+
+The evaluation function should now theoratically be a lot better than before. Unfortunately, while working on the new features, we encountered new bugs, so the quality of the move decision is not as good as we had hoped.
+To analyze the full power of our algorithm we will focus on fixing those bugs in milestone IV.
 
 ## Benchmark
 
@@ -45,7 +57,7 @@ In order to visualize the effectiveness of our changes to the chess engine, we c
 <p align="center">
     <img src="comparison.png" alt="Plot SVG Image" width="75%">
     <br>
-    Figure 1: Comparing the evaluated boards/s in milestone II and milestone III.
+    Figure 1: Comparing the evaluated boards/s in milestone II and milestone III with depth 3 and different FEN.
   <br>
     FEN 1: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
   <br>
@@ -53,3 +65,6 @@ In order to visualize the effectiveness of our changes to the chess engine, we c
   <br>
     FEN 3: 3r4/7p/2p2kp1/2P2p2/3P4/2K3P1/8/5R2 b - - 0 1
 </p>
+
+Figure 1 illustrates a significant disparity in speed between milestone II and milestone III, visualizing the effectiveness of our implemented refactoring and new features.
+We unfortunately weren't able to compare the speeds to 
