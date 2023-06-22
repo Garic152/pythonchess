@@ -74,7 +74,10 @@ We unfortunately weren't able to compare the speeds to milestone I because we di
 
 
 ## What we have learned
-Now we understand more what functions were responsible for the consumption of programm's computation and time. After we recognized these factors we learnt other libraries to optimize and to speed up our code. Spending hours with debugging taught us how to view the program and where to place the debugging marks. Now we are more eager to meet in discord for coding sessions as well as to disscuss our future plans. We refactored many functions, distributed code across files to make reading and understanig of the code easier and not that errorprone, and to avoid circular imports. While learning how to extend the evaluation function we got better at understanding of chess and of the positional game in chess. We got to know other AI-technicues for chess and how to extend alpha-beta-algorithm with with them.
+Now we understand more what functions were responsible for the consumption of programm's computation and time. After we recognized these factors we learnt other libraries to optimize and to speed up our code. 
+Spending hours with debugging taught us how to view the program and where to place the debugging marks. 
+Now we are more eager to meet in discord for coding sessions as well as to disscuss our future plans. 
+We refactored many functions, distributed code across files to make reading and understanig of the code easier and not that errorprone, and to avoid circular imports. While learning how to extend the evaluation function we got better at understanding of chess and of the positional game in chess. We got to know other AI-technicues for chess and how to extend alpha-beta-algorithm with with them.
 
 
 
