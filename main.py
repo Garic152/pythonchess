@@ -82,6 +82,7 @@ class Board:
         self.side = white
         self.can_castle = 0
         self.countercheck = 0
+        self.move = 0
 
         # define board state copy variable
         self.board_copy = [0] * 128
@@ -747,6 +748,8 @@ def loop_game(depth, allowed_time, board):
         make_move(best_move, board)
         print(f"eval {evaluate.evaluate(board, board.side ^ 1)} for side: {board.side ^ 1} after best move ")
 
+        board.move += 1
+
         # print best move and board
         print("Best move: " + char_ascii[board.board[get_move_target(best_move)]] + " on " + square_representation[
             get_move_source(best_move)] + " to " + square_representation[get_move_target(best_move)])
@@ -789,7 +792,7 @@ def main():
     print_stats(board)
     print_board(board)
     print("eval: ", evaluate.evaluate(board, white))
-    loop_game(3, allowed_time, board)
+    loop_game(1, allowed_time, board)
 
     # print(tree_size)
 

@@ -331,8 +331,9 @@ eg_king_table = [
 
 
 def evaluate(board, side):
+    move = board.move
     local_board = np.array(board.board)
-    return count_material(local_board, side) + consider_positions(local_board, side)
+    return count_material(local_board, side) + consider_positions(move, local_board, side)
 
 
 e, P, N, B, R, Q, K, p, n, b, r, q, k, o = range(14)
@@ -354,14 +355,19 @@ early_game_tables = [0, #e is not a piece => no table for e
 
 
 
-def consider_positions(board, side):
+def consider_positions(move, board, side):
     val_pos = 0
     #maybe if turn < 10 then evaluate with early_game tables else with middle_game
     perspective = 1 if side == white else -1
     for position in range(len(board)):
         piece = board[position]
         if piece > 0 and piece < 7:
-            val_pos += early_game_tables[piece][position]
+            if move < 20:
+                print("EARLY GAME")
+                val_pos += early_game_tables[piece][position]
+            elif move >= 20:
+                print("LATE GAME")
+                val_pos += mg_tables[piece][position]
             # evaluating pawn structure
             if piece == P:
                 #evaluation of connected pawns
@@ -382,7 +388,13 @@ def consider_positions(board, side):
                     val_pos -= 20
 
         elif piece > 6 and piece < 13:
-            val_pos -= early_game_tables[piece][position]
+            if piece > 0 and piece < 7:
+                if move < 20:
+                    print("EARLY GAME")
+                    val_pos -= early_game_tables[piece][position]
+                elif move >= 20:
+                    print("LATE GAME")
+                    val_pos -= mg_tables[piece][position]
             # evaluating pawn structure
             if piece == p:
                 #evaluation of connected pawns

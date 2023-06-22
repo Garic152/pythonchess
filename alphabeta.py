@@ -57,7 +57,7 @@ def minimax(allowed_time: int, depth: int, board: main.Board, remi_list):
 
         value = alpha_beta(depth - 1, not maximize, board)
 
-        main.print_board(board)
+        #main.print_board(board)
 
         board = pickle.loads(board_copy)
 
@@ -68,8 +68,11 @@ def minimax(allowed_time: int, depth: int, board: main.Board, remi_list):
             best_value = value
             best_move = move
 
-    print(str(time.time() - timer) + "s")
-    print(tree_size)
+    timef = str(time.time() - timer)
+
+    print(timef + "s")
+    print("Tree size" + str(tree_size))
+    print("Per second: " + str(tree_size / float(timef)))
     if not best_move:
         best_move = reservemove
     return best_move
@@ -92,7 +95,7 @@ def alpha_beta_max(alpha, beta, depth, board, nullmove):
     moves = Moves()
     main.generate_move(moves, board)
 
-    moves = sort(board, moves.moves)
+    #moves = sort(board, moves.moves)
 
     # Perform null move and evaluate the resulting position
     if depth != startdepth and depth >= 1 and not nullmove:
@@ -128,7 +131,7 @@ def alpha_beta_min(alpha, beta, depth, board, nullmove):
     moves = Moves()
     main.generate_move(moves, board)
 
-    moves = sort(board, moves.moves)
+    #moves = sort(board, moves.moves)
 
     # Perform null move and evaluate the resulting position
     if depth != startdepth and depth >= 1 and not nullmove:
