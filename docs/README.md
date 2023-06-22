@@ -67,7 +67,10 @@ In order to visualize the effectiveness of our changes to the chess engine, we c
 </p>
 
 Figure 1 illustrates a significant disparity in speed between milestone II and milestone III, visualizing the effectiveness of our implemented refactoring and new features.
-We unfortunately weren't able to compare the speeds to 
+
+When considering the average results from both Milestone II and Milestone III, the obtained ratio of 1530 to 7717 gives us an approximate speed improvement of around 5 times.
+
+We unfortunately weren't able to compare the speeds to milestone I because we didn't have any alphabeta search at that point.
 
 
 ## What we have learned
