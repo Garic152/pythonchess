@@ -68,3 +68,14 @@ In order to visualize the effectiveness of our changes to the chess engine, we c
 
 Figure 1 illustrates a significant disparity in speed between milestone II and milestone III, visualizing the effectiveness of our implemented refactoring and new features.
 We unfortunately weren't able to compare the speeds to 
+
+
+## What we have learned
+We got better at:
+- understanding what functions take a lot of computation and time -> made our program slower
+- optimizing and speeding up the engine
+- debugging more complex code
+- working more together
+- refactoring of functions/ files to make code easier to read and understand, and to avoid circular imports
+- understanding chess/ positional game in chess
+- extending alpha-beta-algorithm with new features
