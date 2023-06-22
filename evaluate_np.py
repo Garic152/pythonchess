@@ -362,8 +362,45 @@ def consider_positions(board, side):
         piece = board[position]
         if piece > 0 and piece < 7:
             val_pos += early_game_tables[piece][position]
+            # evaluating pawn structure
+            if piece == P:
+                #evaluation of connected pawns
+                pos_14 = position - 14
+                pos_16 = position - 16
+                #if the connected pawn is found evaluate the position as better according to color
+                if not (pos_14 & 0x88) and board[pos_14] == P:
+                    val_pos += 60
+                if not (pos_16 & 0x88) and board[pos_16] == P:
+                    val_pos += 60
+                #evaluation of doubled pawns
+                pos_15 = position - 15
+                # going up the file to find a pawn of the same color or to find the end of file
+                while not (pos_15 & 0x88) and board[pos_15] != P:
+                    pos_15-=15
+                #if the pawn is found evaluate the position worse according to color
+                if not (pos_15 & 0x88) and board[pos_15] == P:
+                    val_pos -= 20
+
         elif piece > 6 and piece < 13:
             val_pos -= early_game_tables[piece][position]
+            # evaluating pawn structure
+            if piece == p:
+                #evaluation of connected pawns
+                pos_14 = position + 14
+                pos_16 = position + 16
+                #if the connected pawn is found evaluate the position as better according to color
+                if not (pos_14 & 0x88) and board[pos_14] == p:
+                    val_pos -= 60
+                if not (pos_16 & 0x88) and board[pos_16] == p:
+                    val_pos -= 60
+                #evaluation of doubled pawns
+                pos_15 = position + 15
+                # going up the file to find a pawn of the same color or to find the end of file
+                while not (pos_15 & 0x88) and board[pos_15] != p:
+                    pos_15+=15
+                #if the pawn is found evaluate the position as worse according to color
+                if not (pos_15 & 0x88) and board[pos_15] == p:
+                    val_pos += 20
 
     return val_pos*perspective
 
