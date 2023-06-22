@@ -82,3 +82,17 @@ We got better at:
 - refactoring of functions/ files to make code easier to read and understand, and to avoid circular imports
 - understanding chess/ positional game in chess
 - extending alpha-beta-algorithm with new features
+
+
+
+## Future plans
+1. Implementing bitboards to increase the speed of our engine
+2. Fixing bugs in our evaluation function
+3. Trying to implement either PVS or Quiescence search
+4. Taking a closer look at ML algorithms
+
+Our first goal will be to fix the currently existing bugs which reduce the quality of our moves. The mistake is likely to be somewhere inside of either the make_move function or the evaluation file.
+
+After that we will focus on rewriting our engine using bitboards, which will hopefully make PVS and other AI techniques easier to implement.
+
+Depending on the complexity of the ML algorithms we might add them to our engine at a later point.
