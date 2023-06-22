@@ -30,3 +30,7 @@ We also did some smaller refactoring in the `alphabeta.py` search. This increase
 With the implementation of move sorting, we were able to reduce the total tree size when doing the alpha beta search. This slightly improved the search speed and didn't have any impact on the move decision itself.
 
 Adding the null-move heuristic increased the speed quite a lot. Although we had some trouble adding it to the existing code it should now work properly. It would have been easier if we would have used it from the beginning.
+
+We now finally included a working time-management which unfortunately isn't that helpful because our alpha-beta algorithm uses depth first search. When the time limit is reached not all of the first moves in the tree have been evaluated yet.
+
+## Benchmark
